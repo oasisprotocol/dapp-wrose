@@ -3,6 +3,7 @@ import { BigNumber, ethers, utils } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { WROSE_CONTRACT_BY_NETWORK } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23295/0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94/
+// https://repo.sourcify.dev/contracts/full_match/23294/0x8Bc2B030b299964eEfb5e1e0b36991352E56D2D3/
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { UnknownNetworkError } from '../utils/errors'
