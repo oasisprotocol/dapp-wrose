@@ -1,9 +1,10 @@
 import { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
-import { ethers, utils } from 'ethers'
+import { BigNumber, ethers, utils } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { WROSE_CONTRACT_BY_NETWORK } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23295/0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94/
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
+import { TransactionResponse } from '@ethersproject/abstract-provider'
 
 const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
 const MAX_GAS_LIMIT = 100000
@@ -24,11 +25,11 @@ interface Web3ProviderState {
 
 interface Web3ProviderContext {
   readonly state: Web3ProviderState
-  wrap: (amount: string) => Promise<void>
-  unwrap: (amount: string) => Promise<void>
+  wrap: (amount: string) => Promise<TransactionResponse>
+  unwrap: (amount: string) => Promise<TransactionResponse>
   connectWallet: () => Promise<void>
-  balance: () => Promise<string>
-  balanceOfWROSE: () => Promise<string>
+  getBalance: () => Promise<BigNumber>
+  getBalanceOfWROSE: () => Promise<BigNumber>
 }
 
 const web3ProviderInitialState: Web3ProviderState = {
@@ -52,15 +53,15 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       const sapphireEthProvider = sapphire.wrap(ethProvider) as (ethers.providers.Web3Provider & sapphire.SapphireAnnex)
 
       const network = await sapphireEthProvider.getNetwork()
-      const contractAddress = WROSE_CONTRACT_BY_NETWORK[network.chainId]
 
-      if (!contractAddress) {
+      if (!(network.chainId in WROSE_CONTRACT_BY_NETWORK)) {
         // TODO: Propagate unsupported network error
         throw new Error('[Web3Context] Unsupported network!')
       }
 
+      const contractAddress = WROSE_CONTRACT_BY_NETWORK[network.chainId]
+
       const wRoseContract = new ethers.Contract(
-        // Sapphire testnet
         contractAddress,
         WrappedRoseMetadata.output.abi,
         sapphireEthProvider.getSigner(),
@@ -84,26 +85,25 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }
 
-  const balance = async () => {
+  const getBalance = async () => {
     const { account, sapphireEthProvider } = state
 
     if (!account || !sapphireEthProvider) {
-      return
+      throw new Error('[Web3Context] Unable to fetch balance!')
     }
 
-    const balanceString = (await sapphireEthProvider.getBalance(account)).toString()
-    return utils.formatEther(balanceString)
+    return await sapphireEthProvider.getBalance(account)
+    // return utils.formatEther(balanceString)
   }
 
-  const balanceOfWROSE = async () => {
+  const getBalanceOfWROSE = async () => {
     const { account, wRoseContract } = state
 
     if (!account || !wRoseContract) {
-      return
+      throw new Error('[Web3Context] Unable to fetch WROSE balance!')
     }
 
-    const balanceString = (await wRoseContract.balanceOf(account)).toString()
-    return utils.formatEther(balanceString)
+    return await wRoseContract.balanceOf(account)
   }
 
   const connectWallet = async () => {
@@ -124,11 +124,10 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const { wRoseContract } = state
 
     if (!wRoseContract) {
-      return
+      throw new Error('[wRoseContract] not initialized!')
     }
 
-    const value = utils.parseUnits(amount, 'ether').toString()
-    await wRoseContract.deposit({ value, gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
+    return await wRoseContract.deposit({ value: amount, gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
   }
 
   const unwrap = async (amount) => {
@@ -139,11 +138,10 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const { wRoseContract } = state
 
     if (!wRoseContract) {
-      return
+      throw new Error('[wRoseContract] not initialized!')
     }
 
-    const value = utils.parseUnits(amount, 'ether').toString()
-    await wRoseContract.withdraw(value, { gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
+    return await wRoseContract.withdraw(amount, { gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
   }
 
   const providerState: Web3ProviderContext = {
@@ -151,8 +149,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     connectWallet,
     wrap,
     unwrap,
-    balance,
-    balanceOfWROSE,
+    getBalance,
+    getBalanceOfWROSE,
   }
 
   return <Web3Context.Provider value={providerState}>{children}</Web3Context.Provider>

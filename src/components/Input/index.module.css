@@ -1,0 +1,41 @@
+.inputGroup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border-radius: 46px;
+    border: 1px solid var(--white);
+    background: var(--white);
+    padding: 1.125rem 2.8125rem;
+}
+
+.inputGroup > label {
+    color:  var(--gray-extra-dark);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 125%;
+    opacity: 0.7;
+    flex: 0 1 auto;
+}
+
+.inputGroup > input {
+    margin: 0;
+    flex: 1 1 auto;
+    max-width: 75%;
+    outline: none;
+    border:none;
+    background-image:none;
+    background-color:transparent;
+    box-shadow: none;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 125%;
+    text-align: right;
+}
+
+.inputGroup > input::placeholder {
+    opacity: .75;
+}

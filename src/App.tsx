@@ -1,20 +1,33 @@
 import { FC } from 'react'
-import { useWeb3 } from './providers/Web3Provider'
+import { Layout } from './components/Layout'
+import {
+  createHashRouter,
+  RouterProvider,
+} from 'react-router-dom'
+import { Wrapper } from './pages/Wrapper'
+import { Web3ContextProvider } from './providers/Web3Provider'
+import { ConnectWallet } from './pages/ConnectWallet'
+import { WrapFormContextProvider } from './providers/WrapFormProvider'
 
-export const App: FC = () => {
-  const { state: { isConnected }, connectWallet, wrap, unwrap, balance, balanceOfWROSE } = useWeb3()
+const router = createHashRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        path: '',
+        element: <ConnectWallet />,
+      },
+      {
+        path: 'wrapper',
+        element: <WrapFormContextProvider><Wrapper /></WrapFormContextProvider>,
+      },
+    ],
+  },
+])
 
-  return (
-    <>
-      <h1>WROSE DAPP</h1>
-
-      {!isConnected && (<button onClick={() => connectWallet()}>Connect Wallet</button>)}
-      {isConnected && <>
-        <button onClick={() => wrap('1')}>Wrap</button>
-        <button onClick={() => unwrap('1')}>Unwrap</button>
-        <button onClick={() => balance()}>Balance ROSE</button>
-        <button onClick={() => balanceOfWROSE()}>Balance WROSE</button>
-      </>}
-    </>
-  )
-}
+export const App: FC = () => (
+  <Web3ContextProvider>
+    <RouterProvider router={router} />
+  </Web3ContextProvider>
+)

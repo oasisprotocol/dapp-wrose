@@ -1,0 +1,13 @@
+.wrapForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapForm > div:first-child  {
+    margin-bottom: 0.625rem;
+}
+
+.gasEstimateLabel {
+    text-align: center;
+    margin: 3.875rem 0 1.5rem;
+}

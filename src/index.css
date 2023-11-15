@@ -1,2 +1,57 @@
 :root {
+    --white: #fff;
+    --brand-dark: #3333c4;
+    --brand-medium: #0092f6;
+    --gray-medium-dark: #565b61;
+    --gray-medium-light: #e3e8ed;
+    --gray-extra-dark: #06152B;
+    --warn: #664d03;
+    --danger: #e9162b;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 150%;
+    color: var(--white);
+    text-align: left;
+    background-color: var(--brand-dark);
+    background-image: url('/background.webp');
+    background-size: contain;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    min-height: 100dvh;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+
+h2 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 140%;
+}
+
+h4 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+p {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 150%;
 }

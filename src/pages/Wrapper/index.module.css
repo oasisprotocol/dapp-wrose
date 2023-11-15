@@ -1,0 +1,10 @@
+.subHeader {
+    margin-bottom: 4.85rem;
+}
+
+.amountPercList {
+    display: flex;
+    justify-content: space-between;
+    width: 75%;
+    margin: 0 auto 1.5rem;
+}
