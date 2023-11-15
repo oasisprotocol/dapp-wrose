@@ -5,6 +5,7 @@ import { WROSE_CONTRACT_BY_NETWORK } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23295/0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94/
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
+import { UnknownNetworkError } from '../utils/errors'
 
 const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
 const MAX_GAS_LIMIT = 100000
@@ -28,6 +29,7 @@ interface Web3ProviderContext {
   wrap: (amount: string) => Promise<TransactionResponse>
   unwrap: (amount: string) => Promise<TransactionResponse>
   connectWallet: () => Promise<void>
+  switchNetwork: () => Promise<void>
   getBalance: () => Promise<BigNumber>
   getBalanceOfWROSE: () => Promise<BigNumber>
   getTransaction: (txHash: string) => Promise<TransactionResponse>
@@ -56,8 +58,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       const network = await sapphireEthProvider.getNetwork()
 
       if (!(network.chainId in WROSE_CONTRACT_BY_NETWORK)) {
-        // TODO: Propagate unsupported network error
-        throw new Error('[Web3Context] Unsupported network!')
+        return Promise.reject(new UnknownNetworkError('Unknown network!'))
       }
 
       const contractAddress = WROSE_CONTRACT_BY_NETWORK[network.chainId]
@@ -117,6 +118,53 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     await _init(account)
   }
 
+  const _addNetwork = async (chainId: number) => {
+    if (chainId === 0x5afe) {
+
+      // Default to Sapphire Mainnet
+      await window.ethereum.request?.({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: '0x5afe',
+            chainName: 'Sapphire Mainnet',
+            nativeCurrency: {
+              name: 'ROSE',
+              symbol: 'ROSE',
+              decimals: 18,
+            },
+            rpcUrls: ['https://sapphire.oasis.io/', 'wss://sapphire.oasis.io/ws'],
+            blockExplorerUrls: ['https://explorer.oasis.io/mainnet/sapphire'],
+          },
+        ],
+      })
+    }
+
+    throw new Error('Unable to automatically add the network, please do it manually!')
+  }
+
+  const switchNetwork = async (toNetworkChainId = 0x5afe) => {
+    const ethProvider = new ethers.providers.Web3Provider(window.ethereum)
+    const sapphireEthProvider = sapphire.wrap(ethProvider) as (ethers.providers.Web3Provider & sapphire.SapphireAnnex)
+
+    const network = await sapphireEthProvider.getNetwork()
+
+    if (network.chainId === toNetworkChainId) return
+    try {
+      await window.ethereum.request?.({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: utils.hexlify(toNetworkChainId) }],
+      })
+    } catch (e) {
+      // Chain is not available in the Metamask
+      if (e?.code !== 4902) {
+        throw e
+      } else {
+        _addNetwork(toNetworkChainId)
+      }
+    }
+  }
+
   const wrap = async (amount) => {
     if (!amount) {
       throw new Error('[amount] is required!')
@@ -164,11 +212,12 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const providerState: Web3ProviderContext = {
     state,
     connectWallet,
+    switchNetwork,
     wrap,
     unwrap,
     getBalance,
     getBalanceOfWROSE,
-    getTransaction
+    getTransaction,
   }
 
   return <Web3Context.Provider value={providerState}>{children}</Web3Context.Provider>

@@ -1,11 +1,12 @@
 .alert {
-    padding: .25rem;
+    padding: .5rem .25rem;
     background-color: white;
     font-size: 14px;
     line-height: 120%;
     border-radius: 10px;
     margin-top: 1rem;
     text-align: center;
+    word-wrap: break-word;
 }
 
 .alertDanger {

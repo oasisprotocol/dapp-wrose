@@ -8,7 +8,7 @@ export const Layout: FC<PropsWithChildren> = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
-  // TODO: Unable to use hooks inside loader in react-router-dom
+  // TODO: Unable to use hooks inside loader in react-router-dom, needs refactoring
   useEffect(() => {
     // Route guard
     // Ignore for tx

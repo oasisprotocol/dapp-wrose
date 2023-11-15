@@ -80,6 +80,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
         amount: amountBN,
       }))
     } catch (ex) {
+      // Ignore if invalid number
       console.error(ex)
     }
   }
@@ -94,16 +95,24 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
   const submit = async (amount: BigNumber) => {
     _setIsLoading(true)
 
-    const { formType, wRoseBalance, balance } = state
+    const { formType } = state
 
     let receipt: TransactionResponse | null = null
 
     if (formType === WrapFormType.WRAP) {
-
-      receipt = await wrap(amount.toString())
+      try {
+        receipt = await wrap(amount.toString())
+      } catch (ex) {
+        _setIsLoading(false)
+        throw ex
+      }
     } else if (formType === WrapFormType.UNWRAP) {
-
-      receipt = await unwrap(amount.toString())
+      try {
+        receipt = await unwrap(amount.toString())
+      } catch (ex) {
+        _setIsLoading(false)
+        throw ex
+      }
     } else {
       _setIsLoading(false)
       return Promise.reject(new Error('[formType] Invalid form type'))
