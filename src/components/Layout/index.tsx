@@ -11,6 +11,11 @@ export const Layout: FC<PropsWithChildren> = () => {
   // TODO: Unable to use hooks inside loader in react-router-dom
   useEffect(() => {
     // Route guard
+    // Ignore for tx
+    if (pathname.startsWith('/tx')) {
+      return
+    }
+
     if (!isConnected && pathname !== '/') {
       navigate('/')
     } else if (isConnected && pathname === '/') {

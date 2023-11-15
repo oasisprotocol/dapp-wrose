@@ -1,0 +1,11 @@
+.openInExplorerBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.06rem 1.5rem;
+}
+
+.subHeader {
+    text-align: center;
+}

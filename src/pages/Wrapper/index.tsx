@@ -41,7 +41,9 @@ export const Wrapper: FC = () => {
     if (formType === WrapFormType.WRAP) {
       if (percentage.eq(100)) {
         /* In case of 100% WRAP, deduct hardcoded gas fee */
-        setAmount(BigNumberUtils.getPercentageAmount(balance, percentage) - utils.parseUnits('0.01', 'ether'))
+        const percAmount = BigNumberUtils.getPercentageAmount(balance, percentage);
+        const fee = utils.parseUnits('0.01', 'ether');
+        setAmount(percAmount.sub(fee))
         setWarn('You are about to convert all your gas fee paying tokens into WROSE, are you sure?')
       } else {
         setAmount(BigNumberUtils.getPercentageAmount(balance, percentage))

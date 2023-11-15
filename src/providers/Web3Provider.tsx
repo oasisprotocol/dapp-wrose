@@ -30,6 +30,7 @@ interface Web3ProviderContext {
   connectWallet: () => Promise<void>
   getBalance: () => Promise<BigNumber>
   getBalanceOfWROSE: () => Promise<BigNumber>
+  getTransaction: (txHash: string) => Promise<TransactionResponse>
 }
 
 const web3ProviderInitialState: Web3ProviderState = {
@@ -144,6 +145,22 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return await wRoseContract.withdraw(amount, { gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
   }
 
+  const getTransaction = async (txHash: string) => {
+    if (!txHash) {
+      throw new Error('[txHash] is required!')
+    }
+
+    const { sapphireEthProvider } = state
+
+    if (!sapphireEthProvider) {
+      throw new Error('[sapphireEthProvider] not initialized!')
+    }
+
+    await sapphireEthProvider.waitForTransaction(txHash)
+
+    return await sapphireEthProvider.getTransaction(txHash)
+  }
+
   const providerState: Web3ProviderContext = {
     state,
     connectWallet,
@@ -151,6 +168,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     unwrap,
     getBalance,
     getBalanceOfWROSE,
+    getTransaction
   }
 
   return <Web3Context.Provider value={providerState}>{children}</Web3Context.Provider>
