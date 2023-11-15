@@ -1,11 +1,10 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect } from 'react'
 import classes from './index.module.css'
-import { BigNumber, utils } from 'ethers'
+import { BigNumber } from 'ethers'
 import { Button } from '../../components/Button'
 import { BigNumberUtils } from '../../utils/big-number.utils'
 import { WrapForm } from '../../components/WrapForm'
 import { useWrapForm, WrapFormType } from '../../providers/WrapFormProvider'
-import { Alert } from '../../components/Alert'
 
 interface PercentageEntry {
   value: BigNumber;
@@ -27,8 +26,7 @@ const percentageList: PercentageEntry[] = [{
 }]
 
 export const Wrapper: FC = () => {
-  const { state: { isLoading, balance, wRoseBalance, formType }, init, setAmount } = useWrapForm()
-  const [warn, setWarn] = useState('')
+  const { state: { isLoading, balance, wRoseBalance, formType }, init, setAmount, getFeeAmount } = useWrapForm()
 
   useEffect(() => {
     init()
@@ -36,15 +34,12 @@ export const Wrapper: FC = () => {
   }, [])
 
   const handlePercentageCalc = (percentage: BigNumber) => {
-    setWarn('')
-
     if (formType === WrapFormType.WRAP) {
       if (percentage.eq(100)) {
         /* In case of 100% WRAP, deduct hardcoded gas fee */
         const percAmount = BigNumberUtils.getPercentageAmount(balance, percentage);
-        const fee = utils.parseUnits('0.01', 'ether');
+        const fee = getFeeAmount()
         setAmount(percAmount.sub(fee))
-        setWarn('You are about to convert all your gas fee paying tokens into WROSE, are you sure?')
       } else {
         setAmount(BigNumberUtils.getPercentageAmount(balance, percentage))
       }
@@ -69,10 +64,6 @@ export const Wrapper: FC = () => {
       </div>
 
       <WrapForm />
-
-      {warn && <Alert variant='danger'>
-        {warn}
-      </Alert>}
     </div>
   )
 }

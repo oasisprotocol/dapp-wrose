@@ -1,5 +1,5 @@
 import { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
-import { BigNumber, BigNumberish } from 'ethers'
+import { BigNumber, BigNumberish, utils } from 'ethers'
 import { useWeb3 } from './Web3Provider'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 
@@ -20,8 +20,9 @@ interface WrapFormProviderContext {
   readonly state: WrapFormProviderState
   init: () => void
   setAmount: (amount: BigNumberish) => void
-  toggleFormType: () => void;
+  toggleFormType: (amount: BigNumber | null) => void;
   submit: (amount: BigNumber) => Promise<TransactionResponse>;
+  getFeeAmount: () => BigNumber
 }
 
 const wrapFormProviderInitialState: WrapFormProviderState = {
@@ -85,21 +86,43 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     }
   }
 
-  const toggleFormType = () => {
-    setState(({ formType, ...prevState }) => ({
+  const getFeeAmount = () => {
+    return utils.parseUnits('0.01', 'ether')
+  }
+
+  const toggleFormType = (amount: BigNumber | null) => {
+    const { balance, wRoseBalance, formType } = state
+
+    const toggledFormType = formType === WrapFormType.WRAP ? WrapFormType.UNWRAP : WrapFormType.WRAP
+
+    let maxAmount = amount
+
+    if (toggledFormType === WrapFormType.WRAP && amount?.gt(balance)) {
+      maxAmount = balance.sub(getFeeAmount())
+    } else if (toggledFormType === WrapFormType.UNWRAP && amount?.gt(wRoseBalance)) {
+      maxAmount = wRoseBalance
+    }
+
+    setState(({ ...prevState }) => ({
       ...prevState,
-      formType: formType === WrapFormType.WRAP ? WrapFormType.UNWRAP : WrapFormType.WRAP,
+      formType: toggledFormType,
+      amount: maxAmount,
     }))
   }
 
   const submit = async (amount: BigNumber) => {
     _setIsLoading(true)
 
-    const { formType } = state
+    const { formType, balance, wRoseBalance } = state
 
     let receipt: TransactionResponse | null = null
 
     if (formType === WrapFormType.WRAP) {
+      if (amount.gt(balance.sub(getFeeAmount()))) {
+        _setIsLoading(false)
+        return Promise.reject(new Error('Insufficient balance'))
+      }
+
       try {
         receipt = await wrap(amount.toString())
       } catch (ex) {
@@ -107,6 +130,11 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
         throw ex
       }
     } else if (formType === WrapFormType.UNWRAP) {
+      if (amount.gt(wRoseBalance)) {
+        _setIsLoading(false)
+        return Promise.reject(new Error('Insufficient balance'))
+      }
+
       try {
         receipt = await unwrap(amount.toString())
       } catch (ex) {
@@ -125,6 +153,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
   const providerState: WrapFormProviderContext = {
     state,
     init,
+    getFeeAmount,
     setAmount,
     toggleFormType,
     submit,

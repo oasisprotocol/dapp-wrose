@@ -6,7 +6,6 @@ import { useWrapForm, WrapFormType } from '../../providers/WrapFormProvider'
 import { utils } from 'ethers'
 import { Alert } from '../Alert'
 import { useNavigate } from 'react-router-dom'
-import { CachedIcon } from '../icons/CachedIcon'
 import { ToggleButton } from '../ToggleButton'
 
 const AMOUNT_PATTERN = '^[0-9]*[.,]?[0-9]*$'
@@ -32,7 +31,7 @@ const labelMapByFormType: Record<WrapFormType, WrapFormLabels> = {
 
 export const WrapForm: FC = () => {
   const navigate = useNavigate()
-  const { state: { formType, amount, isLoading }, toggleFormType, submit } = useWrapForm()
+  const { state: { formType, amount, isLoading, balance }, toggleFormType, submit, getFeeAmount } = useWrapForm()
   const {
     firstInputLabel,
     secondInputLabel,
@@ -42,6 +41,7 @@ export const WrapForm: FC = () => {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    setError('')
     const formattedAmount = amount ? utils.formatEther(amount) : ''
 
     setValue(formattedAmount)
@@ -55,10 +55,11 @@ export const WrapForm: FC = () => {
     e.preventDefault()
     e.stopPropagation()
 
-    toggleFormType()
+    toggleFormType(value ? utils.parseUnits(value, 'ether') : null)
   }
 
   const handleFormSubmit = async (e: FormEvent) => {
+    setError('')
     e.preventDefault()
 
     try {
@@ -70,6 +71,9 @@ export const WrapForm: FC = () => {
       setError(ex?.message || JSON.stringify(ex))
     }
   }
+
+  const showRoseMaxAmountWarning = formType === WrapFormType.WRAP
+  && value ? utils.parseUnits(value, 'ether').eq(balance.sub(getFeeAmount())) : false
 
   return (
     <div>
@@ -89,6 +93,9 @@ export const WrapForm: FC = () => {
 
         <Button disabled={isLoading} type='submit' fullWidth>{submitBtnLabel}</Button>
         {error && <Alert variant='danger'>{error}</Alert>}
+        {showRoseMaxAmountWarning && <Alert variant='warn'>
+          You are about to convert all your gas fee paying tokens into WROSE, are you sure?
+        </Alert>}
       </form>
     </div>
   )
