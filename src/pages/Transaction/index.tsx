@@ -1,10 +1,9 @@
 import { FC, useEffect, useState } from 'react'
 import { Button } from '../../components/Button'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useWeb3 } from '../../providers/Web3Provider'
 import { Constants } from '../../utils/constants'
 import { OpenInNewIcon } from '../../components/icons/OpenInNewIcon'
-import { utils } from 'ethers'
 import classes from './index.module.css'
 
 enum TransactionStatus {
@@ -13,12 +12,19 @@ enum TransactionStatus {
   Fail
 }
 
+enum TransactionType {
+  Rose,
+  WRose
+}
+
 export const Transaction: FC = () => {
   const navigate = useNavigate()
   const { txHash } = useParams()
+  const [searchParams] = useSearchParams()
+  const amount = searchParams.get('amount') ?? null
   const { getTransaction } = useWeb3()
   const [status, setStatus] = useState(TransactionStatus.Loading)
-  const [amount, setAmount] = useState('')
+  const [type, setType] = useState<TransactionType | null>(null)
 
   useEffect(() => {
     const init = async () => {
@@ -30,7 +36,9 @@ export const Transaction: FC = () => {
         const tx = await getTransaction(txHash!)
 
         if (tx.value.gt(0)) {
-          setAmount(utils.formatEther(tx.value))
+          setType(TransactionType.Rose)
+        } else {
+          setType(TransactionType.WRose)
         }
 
         setStatus(TransactionStatus.Success)
@@ -68,9 +76,9 @@ export const Transaction: FC = () => {
           <p className={classes.subHeader}>
             Congrats!
             <br />
-            You now own &nbsp;
-            {amount && (<span>{amount} WROSE</span>)}
-            {!amount && (<span>ROSE</span>)}
+            You now own
+            {type === TransactionType.WRose && (<b>&nbsp;{amount} WROSE</b>)}
+            {type === TransactionType.Rose && (<b>&nbsp;{amount} ROSE</b>)}
           </p>
 
           <Button onClick={handleNavigateBack}
