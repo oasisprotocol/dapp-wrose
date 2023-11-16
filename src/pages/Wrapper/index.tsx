@@ -5,6 +5,7 @@ import { Button } from '../../components/Button'
 import { BigNumberUtils } from '../../utils/big-number.utils'
 import { WrapForm } from '../../components/WrapForm'
 import { useWrapForm, WrapFormType } from '../../providers/WrapFormProvider'
+import { useWeb3 } from '../../providers/Web3Provider'
 
 interface PercentageEntry {
   value: BigNumber;
@@ -26,6 +27,7 @@ const percentageList: PercentageEntry[] = [{
 }]
 
 export const Wrapper: FC = () => {
+  const { addTokenToWallet } = useWeb3()
   const { state: { isLoading, balance, wRoseBalance, formType }, init, setAmount, getFeeAmount } = useWrapForm()
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export const Wrapper: FC = () => {
     if (formType === WrapFormType.WRAP) {
       if (percentage.eq(100)) {
         /* In case of 100% WRAP, deduct hardcoded gas fee */
-        const percAmount = BigNumberUtils.getPercentageAmount(balance, percentage);
+        const percAmount = BigNumberUtils.getPercentageAmount(balance, percentage)
         const fee = getFeeAmount()
         setAmount(percAmount.sub(fee))
       } else {
@@ -52,9 +54,13 @@ export const Wrapper: FC = () => {
 
   return (
     <div>
-      <p className={classes.subHeader}>
-        Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-      </p>
+      <div className={classes.subHeader}>
+        <p>
+          Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
+        </p>
+
+        <Button className={classes.importWRoseBtn} onClick={addTokenToWallet}>Import WROSE to Wallet</Button>
+      </div>
 
       <div className={classes.amountPercList}>
         {percentageList.map(({ label, value }) => (

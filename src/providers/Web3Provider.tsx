@@ -21,6 +21,7 @@ interface Web3ProviderState {
   isConnected: boolean
   ethProvider: ethers.providers.Web3Provider | null
   sapphireEthProvider: (ethers.providers.Web3Provider & sapphire.SapphireAnnex) | null
+  wRoseContractAddress: string | null
   wRoseContract: ethers.Contract | null
   account: string | null
   explorerBaseUrl: string | null
@@ -36,16 +37,18 @@ interface Web3ProviderContext {
   getBalance: () => Promise<BigNumber>
   getBalanceOfWROSE: () => Promise<BigNumber>
   getTransaction: (txHash: string) => Promise<TransactionResponse>
+  addTokenToWallet: () => Promise<void>
 }
 
 const web3ProviderInitialState: Web3ProviderState = {
   isConnected: false,
   ethProvider: null,
   sapphireEthProvider: null,
+  wRoseContractAddress: null,
   wRoseContract: null,
   account: null,
   explorerBaseUrl: null,
-  networkName: null
+  networkName: null,
 }
 
 export const Web3Context = createContext<Web3ProviderContext>({} as Web3ProviderContext)
@@ -82,7 +85,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         wRoseContract,
         account,
         explorerBaseUrl,
-        networkName
+        networkName,
+        wRoseContractAddress
       }))
     } catch (ex) {
       setState(prevState => ({
@@ -216,6 +220,29 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return await sapphireEthProvider.getTransaction(txHash)
   }
 
+  const addTokenToWallet = async () => {
+    const { wRoseContractAddress: address } = state
+    const symbol = 'WROSE'
+
+    try {
+      await window.ethereum.request?.({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address,
+            symbol,
+            decimals: 18,
+          },
+          // Fails if Array
+        } as unknown as never,
+      })
+    } catch (ex) {
+      // Silently fail
+      console.error(ex)
+    }
+  }
+
   const providerState: Web3ProviderContext = {
     state,
     connectWallet,
@@ -225,6 +252,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     getBalance,
     getBalanceOfWROSE,
     getTransaction,
+    addTokenToWallet,
   }
 
   return <Web3Context.Provider value={providerState}>{children}</Web3Context.Provider>

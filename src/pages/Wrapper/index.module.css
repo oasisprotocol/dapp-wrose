@@ -1,5 +1,8 @@
 .subHeader {
     margin-bottom: 4.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .amountPercList {
@@ -7,4 +10,16 @@
     justify-content: space-between;
     width: 75%;
     margin: 0 auto 1.5rem;
+}
+
+.importWRoseBtn.importWRoseBtn {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: auto;
+    padding: .5rem;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    text-transform: none;
+    border-radius: 10px;
 }
