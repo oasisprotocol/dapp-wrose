@@ -7,6 +7,7 @@ import { NETWORKS } from '../constants/config'
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { UnknownNetworkError } from '../utils/errors'
+import detectEthereumProvider from '@metamask/detect-provider';
 
 const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
 const MAX_GAS_LIMIT = 100000
@@ -32,6 +33,7 @@ interface Web3ProviderContext {
   readonly state: Web3ProviderState
   wrap: (amount: string) => Promise<TransactionResponse>
   unwrap: (amount: string) => Promise<TransactionResponse>
+  isMetaMaskInstalled: () => Promise<boolean>
   connectWallet: () => Promise<void>
   switchNetwork: () => Promise<void>
   getBalance: () => Promise<BigNumber>
@@ -117,6 +119,12 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     return await wRoseContract.balanceOf(account)
+  }
+
+  const isMetaMaskInstalled = async () => {
+    const provider = await detectEthereumProvider();
+
+    return !!window.ethereum && provider === window.ethereum;
   }
 
   const connectWallet = async () => {
@@ -245,6 +253,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const providerState: Web3ProviderContext = {
     state,
+    isMetaMaskInstalled,
     connectWallet,
     switchNetwork,
     wrap,
