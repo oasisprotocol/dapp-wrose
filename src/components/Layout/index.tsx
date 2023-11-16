@@ -2,9 +2,10 @@ import { FC, PropsWithChildren, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import classes from './index.module.css'
 import { useWeb3 } from '../../providers/Web3Provider'
+import { Account } from '../Account'
 
 export const Layout: FC<PropsWithChildren> = () => {
-  const { state: { isConnected } } = useWeb3()
+  const { state: { isConnected, account, networkName } } = useWeb3()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -24,9 +25,10 @@ export const Layout: FC<PropsWithChildren> = () => {
   }, [isConnected, pathname, navigate])
 
   return (
-    <div className={classes.layout}>
+    <main className={classes.layout}>
+      {isConnected && account && <Account address={account} networkName={networkName ?? ''} />}
       <h2 className={classes.header}>ROSE (un) wrapper</h2>
       <Outlet />
-    </div>
+    </main>
   )
 }

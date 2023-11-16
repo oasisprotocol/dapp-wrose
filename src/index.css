@@ -1,7 +1,8 @@
 :root {
     --white: #fff;
-    --brand-dark: #3333c4;
     --brand-medium: #0092f6;
+    --brand-dark: #3333c4;
+    --brand-extra-dark: #000062;
     --gray-medium-dark: #565b61;
     --gray-medium-light: #e3e8ed;
     --gray-extra-dark: #06152B;

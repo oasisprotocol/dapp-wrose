@@ -1,7 +1,7 @@
 import { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
 import { BigNumber, ethers, utils } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
-import { EXPLORER_URL_BY_NETWORK, WROSE_CONTRACT_BY_NETWORK } from '../constants/config'
+import { NETWORKS } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23295/0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94/
 // https://repo.sourcify.dev/contracts/full_match/23294/0x8Bc2B030b299964eEfb5e1e0b36991352E56D2D3/
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
@@ -24,6 +24,7 @@ interface Web3ProviderState {
   wRoseContract: ethers.Contract | null
   account: string | null
   explorerBaseUrl: string | null
+  networkName: string | null
 }
 
 interface Web3ProviderContext {
@@ -43,7 +44,8 @@ const web3ProviderInitialState: Web3ProviderState = {
   sapphireEthProvider: null,
   wRoseContract: null,
   account: null,
-  explorerBaseUrl: null
+  explorerBaseUrl: null,
+  networkName: null
 }
 
 export const Web3Context = createContext<Web3ProviderContext>({} as Web3ProviderContext)
@@ -60,19 +62,17 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
       const network = await sapphireEthProvider.getNetwork()
 
-      if (!(network.chainId in WROSE_CONTRACT_BY_NETWORK)) {
+      if (!(network.chainId in NETWORKS)) {
         return Promise.reject(new UnknownNetworkError('Unknown network!'))
       }
 
-      const contractAddress = WROSE_CONTRACT_BY_NETWORK[network.chainId]
+      const { wRoseContractAddress, explorerBaseUrl, networkName } = NETWORKS[network.chainId]
 
       const wRoseContract = new ethers.Contract(
-        contractAddress,
+        wRoseContractAddress,
         WrappedRoseMetadata.output.abi,
         sapphireEthProvider.getSigner(),
       )
-
-      const explorerBaseUrl = EXPLORER_URL_BY_NETWORK[network.chainId]
 
       setState(prevState => ({
         ...prevState,
@@ -81,7 +81,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         sapphireEthProvider,
         wRoseContract,
         account,
-        explorerBaseUrl
+        explorerBaseUrl,
+        networkName
       }))
     } catch (ex) {
       setState(prevState => ({

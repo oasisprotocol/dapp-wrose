@@ -2,11 +2,10 @@ import { FC, useEffect, useState } from 'react'
 import { Button } from '../../components/Button'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useWeb3 } from '../../providers/Web3Provider'
-import { Constants } from '../../utils/constants'
 import { OpenInNewIcon } from '../../components/icons/OpenInNewIcon'
 import classes from './index.module.css'
-import { getTransactionUrl } from '../../constants/config'
 import { Spinner } from '../../components/Spinner'
+import { StringUtils } from '../../utils/string.utils'
 
 enum TransactionStatus {
   Loading,
@@ -54,7 +53,7 @@ export const Transaction: FC = () => {
 
   const handleNavigateToExplorer = () => {
     if (explorerBaseUrl && txHash) {
-      const txUrl = getTransactionUrl(explorerBaseUrl, txHash)
+      const txUrl = StringUtils.getTransactionUrl(explorerBaseUrl, txHash)
       window.open(txUrl, '_blank', 'noopener,noreferrer')
     }
   }

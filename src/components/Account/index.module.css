@@ -1,0 +1,48 @@
+.account {
+    display: none;
+    position: fixed;
+    top: 2.875rem;
+    right: 2.5rem;
+    justify-items: center;
+    gap: 1rem;
+    border: 3px solid var(--brand-extra-dark);
+    border-radius: 12px;
+    background: var(--white);
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.accountDetails {
+    display: inline-flex;
+    flex-direction: column;
+    justify-items: center;
+    color: var(--brand-extra-dark);
+    text-align: right;
+    margin-bottom: 0;
+    justify-content: space-between;
+}
+
+.accountAddress {
+    font-family: monospace;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 143%;
+}
+
+.network {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 140%;
+    text-transform: capitalize;
+}
+
+.jazzIcon {
+    display: inline-block;
+}
+
+@media screen and (min-width: 1000px) {
+    .account {
+        display: inline-flex;
+    }
+}
