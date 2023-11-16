@@ -5,6 +5,8 @@ import { useWeb3 } from '../../providers/Web3Provider'
 import { Constants } from '../../utils/constants'
 import { OpenInNewIcon } from '../../components/icons/OpenInNewIcon'
 import classes from './index.module.css'
+import { getTransactionUrl } from '../../constants/config'
+import { Spinner } from '../../components/Spinner'
 
 enum TransactionStatus {
   Loading,
@@ -22,7 +24,7 @@ export const Transaction: FC = () => {
   const { txHash } = useParams()
   const [searchParams] = useSearchParams()
   const amount = searchParams.get('amount') ?? null
-  const { getTransaction } = useWeb3()
+  const { state: { explorerBaseUrl }, getTransaction } = useWeb3()
   const [status, setStatus] = useState(TransactionStatus.Loading)
   const [type, setType] = useState<TransactionType | null>(null)
 
@@ -36,9 +38,9 @@ export const Transaction: FC = () => {
         const tx = await getTransaction(txHash!)
 
         if (tx.value.gt(0)) {
-          setType(TransactionType.Rose)
-        } else {
           setType(TransactionType.WRose)
+        } else {
+          setType(TransactionType.Rose)
         }
 
         setStatus(TransactionStatus.Success)
@@ -48,50 +50,61 @@ export const Transaction: FC = () => {
     }
 
     init()
-  }, [getTransaction, txHash])
+  }, [getTransaction, navigate, txHash])
 
   const handleNavigateToExplorer = () => {
-    window.open(`${Constants.EXPLORER_SAPPHIRE_TESTNET_TX_URL}${txHash}`, '_blank', 'noopener,noreferrer')
+    if (explorerBaseUrl && txHash) {
+      const txUrl = getTransactionUrl(explorerBaseUrl, txHash)
+      window.open(txUrl, '_blank', 'noopener,noreferrer')
+    }
   }
 
   const handleNavigateBack = () => {
     navigate('/wrapper')
   }
 
-
   return (<>
       {status === TransactionStatus.Loading && (<div>
-          <p className={classes.subHeader}>
-            Wrapping your tokens...
-          </p>
-
-          <Button className={classes.openInExplorerBtn} variant='secondary' onClick={handleNavigateToExplorer}
-                  fullWidth>
-            View on explorer
-            <OpenInNewIcon />
-          </Button>
+          <Spinner className={classes.spinner}></Spinner>
+          <h3 className={classes.subHeader}>
+            Wrapping your tokens
+          </h3>
         </div>
       )}
       {status === TransactionStatus.Success && (<div>
-          <p className={classes.subHeader}>
+          <p className={classes.h100}>
+            &#x1F389;
+          </p>
+          <h3 className={classes.subHeader}>
             Congrats!
             <br />
-            You now own
+            You received
             {type === TransactionType.WRose && (<b>&nbsp;{amount} WROSE</b>)}
             {type === TransactionType.Rose && (<b>&nbsp;{amount} ROSE</b>)}
-          </p>
+          </h3>
 
-          <Button onClick={handleNavigateBack}
+          {explorerBaseUrl && txHash &&
+            (<Button className={classes.openInExplorerBtn} onClick={handleNavigateToExplorer}
+                     fullWidth>
+              View on explorer
+              <OpenInNewIcon />
+            </Button>)
+          }
+          <Button variant='secondary' onClick={handleNavigateBack}
                   fullWidth>
             Close
           </Button>
         </div>
       )}
       {status === TransactionStatus.Fail && (<div>
-          <p className={classes.subHeader}>
-            There was an unexpected error.
-            Please try again.
+          <p className={classes.h100}>
+            &#x2757;
           </p>
+          <h3 className={classes.subHeader}>
+            There was an unexpected error.
+            <br />
+            Please try again.
+          </h3>
 
           <Button onClick={handleNavigateBack}
                   fullWidth>
