@@ -111,6 +111,10 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
   }
 
   const submit = async (amount: BigNumber) => {
+    if (!amount || amount.lte(0)) {
+      return Promise.reject(new Error('Amount is required'))
+    }
+
     _setIsLoading(true)
 
     const { formType, balance, wRoseBalance } = state
