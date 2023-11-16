@@ -98,7 +98,7 @@ export const Transaction: FC = () => {
       )}
       {status === TransactionStatus.Fail && (<div>
           <p className={classes.h100}>
-            &#x2757;
+            &#x2755;
           </p>
           <h3 className={classes.subHeader}>
             There was an unexpected error.
