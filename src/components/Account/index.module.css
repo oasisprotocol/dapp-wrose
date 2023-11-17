@@ -37,10 +37,6 @@
     text-transform: capitalize;
 }
 
-.jazzIcon {
-    display: inline-block;
-}
-
 @media screen and (min-width: 1000px) {
     .account {
         display: inline-flex;

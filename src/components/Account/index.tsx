@@ -1,23 +1,8 @@
-import createJazzIcon from '@metamask/jazzicon'
 import classes from './index.module.css'
 import { FC } from 'react'
 import { useWeb3 } from '../../providers/Web3Provider'
 import { StringUtils } from '../../utils/string.utils'
-import { NumberUtils } from '../../utils/number.utils'
-
-interface JazzIconProps {
-  address: string;
-  size: number;
-}
-
-const JazzIcon: FC<JazzIconProps> = ({ address, size }) => {
-  const seed = NumberUtils.jsNumberForAddress(address)
-  const jazzIconJsx = createJazzIcon(size, seed)
-
-  /* TODO: UNSAFE, consider replacing the library to avoid dangerouslySetInnerHTML */
-  return <div style={{ width: size, height: size }} id={seed.toString()} className={classes.jazzIcon}
-              dangerouslySetInnerHTML={{ __html: jazzIconJsx.outerHTML }} />
-}
+import { JazzIcon } from '../JazzIcon'
 
 interface Props {
   address: string;
