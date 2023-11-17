@@ -6,6 +6,7 @@ import { OpenInNewIcon } from '../../components/icons/OpenInNewIcon'
 import classes from './index.module.css'
 import { Spinner } from '../../components/Spinner'
 import { StringUtils } from '../../utils/string.utils'
+import { WrapFormType } from '../../providers/WrapFormProvider'
 
 enum TransactionStatus {
   Loading,
@@ -23,6 +24,7 @@ export const Transaction: FC = () => {
   const { txHash } = useParams()
   const [searchParams] = useSearchParams()
   const amount = searchParams.get('amount') ?? null
+  const action: WrapFormType = searchParams.get('action') as WrapFormType ?? WrapFormType.WRAP
   const { state: { explorerBaseUrl }, getTransaction } = useWeb3()
   const [status, setStatus] = useState(TransactionStatus.Loading)
   const [type, setType] = useState<TransactionType | null>(null)
@@ -66,7 +68,9 @@ export const Transaction: FC = () => {
       {status === TransactionStatus.Loading && (<div>
           <Spinner className={classes.spinner}></Spinner>
           <h3 className={classes.subHeader}>
-            Wrapping your tokens
+            {action === WrapFormType.WRAP && <>Wrapping</>}
+            {action === WrapFormType.UNWRAP && <>Unwrapping</>}
+            &nbsp;your tokens
           </h3>
         </div>
       )}
