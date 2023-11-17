@@ -1,0 +1,24 @@
+.wrapForm {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.wrapFormInputs {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: .625rem;
+}
+
+.toggleBtn {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+}
+
+.gasEstimateLabel {
+    text-align: center;
+    margin: 3.875rem 0 1.5rem;
+}

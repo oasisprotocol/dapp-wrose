@@ -1,0 +1,15 @@
+.layout {
+    margin: 0 auto;
+    max-width: 620px;
+    padding-top: 4.625rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.header > svg {
+    display: inline-block;
+    position: relative;
+    top: 0.5rem;
+}

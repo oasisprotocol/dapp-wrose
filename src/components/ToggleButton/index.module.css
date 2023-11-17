@@ -1,0 +1,17 @@
+.toggleButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    box-shadow: none;
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    user-select: none;
+    color: var(--white);
+    background: var(--brand-dark);
+}
+
