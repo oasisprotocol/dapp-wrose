@@ -223,7 +223,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       throw new Error('[sapphireEthProvider] not initialized!')
     }
 
-    await sapphireEthProvider.waitForTransaction(txHash)
+    const txReceipt = await sapphireEthProvider.waitForTransaction(txHash)
+    if (txReceipt.status === 0) throw new Error('Transaction failed')
 
     return await sapphireEthProvider.getTransaction(txHash)
   }
