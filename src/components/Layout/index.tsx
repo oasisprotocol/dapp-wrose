@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import classes from './index.module.css'
 import { useWeb3 } from '../../providers/Web3Provider'
 import { Account } from '../Account'
+import { LogoIcon } from '../icons/LogoIcon'
 
 export const Layout: FC<PropsWithChildren> = () => {
   const { state: { isConnected, account, networkName } } = useWeb3()
@@ -27,7 +28,7 @@ export const Layout: FC<PropsWithChildren> = () => {
   return (
     <main className={classes.layout}>
       {isConnected && account && <Account address={account} networkName={networkName ?? ''} />}
-      <h2 className={classes.header}>ROSE (un) wrapper</h2>
+      <h2 className={classes.header}>ROSE <LogoIcon /> wrapper</h2>
       <Outlet />
     </main>
   )
