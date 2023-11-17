@@ -2,7 +2,7 @@ import { FC, useEffect } from 'react'
 import classes from './index.module.css'
 import { BigNumber } from 'ethers'
 import { Button } from '../../components/Button'
-import { BigNumberUtils } from '../../utils/big-number.utils'
+import { NumberUtils } from '../../utils/number.utils'
 import { WrapForm } from '../../components/WrapForm'
 import { useWrapForm, WrapFormType } from '../../providers/WrapFormProvider'
 import { useWeb3 } from '../../providers/Web3Provider'
@@ -39,14 +39,14 @@ export const Wrapper: FC = () => {
     if (formType === WrapFormType.WRAP) {
       if (percentage.eq(100)) {
         /* In case of 100% WRAP, deduct hardcoded gas fee */
-        const percAmount = BigNumberUtils.getPercentageAmount(balance, percentage)
+        const percAmount = NumberUtils.getPercentageAmount(balance, percentage)
         const fee = getFeeAmount()
         setAmount(percAmount.sub(fee))
       } else {
-        setAmount(BigNumberUtils.getPercentageAmount(balance, percentage))
+        setAmount(NumberUtils.getPercentageAmount(balance, percentage))
       }
     } else if (formType === WrapFormType.UNWRAP) {
-      setAmount(BigNumberUtils.getPercentageAmount(wRoseBalance, percentage))
+      setAmount(NumberUtils.getPercentageAmount(wRoseBalance, percentage))
     } else {
       throw new Error('[formType] Invalid form type')
     }

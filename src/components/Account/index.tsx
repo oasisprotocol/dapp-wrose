@@ -3,6 +3,7 @@ import classes from './index.module.css'
 import { FC } from 'react'
 import { useWeb3 } from '../../providers/Web3Provider'
 import { StringUtils } from '../../utils/string.utils'
+import { NumberUtils } from '../../utils/number.utils'
 
 interface JazzIconProps {
   address: string;
@@ -10,7 +11,7 @@ interface JazzIconProps {
 }
 
 const JazzIcon: FC<JazzIconProps> = ({ address, size }) => {
-  const seed = parseInt(address.slice(2, 10), 16)
+  const seed = NumberUtils.jsNumberForAddress(address)
   const jazzIconJsx = createJazzIcon(size, seed)
 
   /* TODO: UNSAFE, consider replacing the library to avoid dangerouslySetInnerHTML */
