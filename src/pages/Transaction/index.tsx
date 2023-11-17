@@ -66,7 +66,9 @@ export const Transaction: FC = () => {
 
   return (<>
       {status === TransactionStatus.Loading && (<div>
-          <Spinner className={classes.spinner}></Spinner>
+          <div className={classes.spinnerContainer}>
+            <Spinner />
+          </div>
           <h3 className={classes.subHeader}>
             {action === WrapFormType.WRAP && <>Wrapping</>}
             {action === WrapFormType.UNWRAP && <>Unwrapping</>}

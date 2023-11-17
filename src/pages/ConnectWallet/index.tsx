@@ -61,7 +61,7 @@ export const ConnectWallet: FC = () => {
         <p className={classes.subHeader}>
           Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
           <br />
-          MetaMask not detect, please install it.
+          MetaMask not detected, please install it.
         </p>
 
         <Button className={classes.installMetaMaskBtn} onClick={handleInstallMetaMask} fullWidth disabled={isLoading}>

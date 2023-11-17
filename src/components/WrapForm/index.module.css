@@ -13,12 +13,24 @@
 
 .toggleBtn {
     position: absolute;
-    left: 50%;
+    left: 2.8125rem;
     top: 50%;
-    transform: translate3d(-50%, -50%, 0);
+    transform: translateY(-50%);
 }
 
 .gasEstimateLabel {
     text-align: center;
-    margin: 3.875rem 0 1.5rem;
+    margin: 2rem 0 1rem;
+}
+
+@media screen and (min-width: 1000px) {
+    .toggleBtn {
+        left: 50%;
+        top: 50%;
+        transform: translate3d(-50%, -50%, 0);
+    }
+
+    .gasEstimateLabel {
+        margin: 3.875rem 0 1.5rem;
+    }
 }

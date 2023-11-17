@@ -9,8 +9,8 @@
 
 .spinner {
     margin: 0 auto;
-    border: 0.75rem solid var(--white);
-    border-top: 0.75rem solid var(--brand-medium);
+    border: 12px solid var(--white);
+    border-top: 12px solid var(--brand-medium);
     border-radius: 50%;
     width: 96px;
     height: 96px;

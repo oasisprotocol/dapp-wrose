@@ -19,11 +19,11 @@ interface WrapFormLabels {
 const labelMapByFormType: Record<WrapFormType, WrapFormLabels> = {
   [WrapFormType.WRAP]: {
     firstInputLabel: 'ROSE',
-    secondInputLabel: 'WROSE',
+    secondInputLabel: 'wROSE',
     submitBtnLabel: 'Wrap tokens',
   },
   [WrapFormType.UNWRAP]: {
-    firstInputLabel: 'WROSE',
+    firstInputLabel: 'wROSE',
     secondInputLabel: 'ROSE',
     submitBtnLabel: 'Unwrap tokens',
   },

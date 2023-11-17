@@ -29,10 +29,11 @@
     border-width: 2px;
     border-color: var(--gray-medium-light);
     background-color: transparent;
-    min-width: 100px;
-    padding: 0.58rem 1.5rem;
+    min-width: 75px;
+    padding: 0.4rem;
     line-height: 120%;
     border-radius: 10px;
+    font-size: 13.5px;
 }
 
 .buttonDisabled {
@@ -44,4 +45,12 @@
 
 .fullWidth {
     width: 100%;
+}
+
+@media screen and (min-width: 1000px) {
+    .buttonTertiary {
+        min-width: 100px;
+        padding: 0.58rem 1.5rem;
+        font-size: 18px;
+    }
 }
