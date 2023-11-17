@@ -146,7 +146,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         params: [
           {
             chainId: '0x5afe',
-            chainName: 'Sapphire Mainnet',
+            chainName: 'Oasis Sapphire',
             nativeCurrency: {
               name: 'ROSE',
               symbol: 'ROSE',
