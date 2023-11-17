@@ -8,6 +8,7 @@ interface Props<T = any> extends PropsWithChildren {
   placeholder?: string;
   id?: string;
   disabled?: boolean;
+  inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
   value: T;
   valueChange: (value: T) => void;
 }
@@ -20,6 +21,7 @@ export const Input = <T extends any>(
     placeholder,
     id,
     disabled,
+    inputMode,
     value,
     valueChange,
   }: Props<T>) => {
@@ -29,7 +31,7 @@ export const Input = <T extends any>(
   return (
     <div className={classes.inputGroup}>
       <label htmlFor={inputId}>{label}</label>
-      <input id={inputId} type={type} inputMode='decimal' autoComplete='off' autoCorrect='off' pattern={pattern}
+      <input id={inputId} type={type} inputMode={inputMode} autoComplete='off' autoCorrect='off' pattern={pattern}
              placeholder={placeholder} disabled={disabled} value={value}
              onChange={({ target: { value } }) => valueChange(value)} />
     </div>

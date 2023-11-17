@@ -75,10 +75,11 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     try {
       // Throws if invalid number
       const amountBN = BigNumber.from(amount)
+      const positiveAmountBN = amountBN.lte(0) ? BigNumber.from(0) : amountBN
 
       setState(prevState => ({
         ...prevState,
-        amount: amountBN,
+        amount: positiveAmountBN,
       }))
     } catch (ex) {
       // Ignore if invalid number

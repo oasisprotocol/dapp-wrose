@@ -72,18 +72,18 @@ export const WrapForm: FC = () => {
     }
   }
 
-  const showRoseMaxAmountWarning = formType === WrapFormType.WRAP
-  && value ? utils.parseUnits(value, 'ether').eq(balance.sub(getFeeAmount())) : false
+  const parsedValue = (formType === WrapFormType.WRAP && value) ? utils.parseUnits(value || '0', 'ether') : null
+  const showRoseMaxAmountWarning = (parsedValue && parsedValue.gt(0)) ? utils.parseUnits(value, 'ether').eq(balance.sub(getFeeAmount())) : false
 
   return (
     <div>
       <form className={classes.wrapForm} onSubmit={handleFormSubmit}>
         <div className={classes.wrapFormInputs}>
           <Input<string> disabled={isLoading} type='text' label={firstInputLabel} pattern={AMOUNT_PATTERN}
-                         placeholder='0'
+                         placeholder='0' inputMode='decimal'
                          value={value} valueChange={handleValueChange} />
           <Input<string> disabled={isLoading} type='text' label={secondInputLabel} pattern={AMOUNT_PATTERN}
-                         placeholder='0'
+                         placeholder='0' inputMode='decimal'
                          value={value} valueChange={handleValueChange} />
           <ToggleButton className={classes.toggleBtn} onClick={handleToggleFormType} disabled={isLoading} />
         </div>
@@ -94,7 +94,7 @@ export const WrapForm: FC = () => {
         <Button disabled={isLoading} type='submit' fullWidth>{submitBtnLabel}</Button>
         {error && <Alert variant='danger'>{error}</Alert>}
         {showRoseMaxAmountWarning && <Alert variant='warn'>
-          You are about to convert all your gas fee paying tokens into WROSE, are you sure?
+          You will not be able to pay for gas in subsequent transactions if you convert all your ROSE into WROSE, are you sure?
         </Alert>}
       </form>
     </div>
