@@ -108,7 +108,6 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     return await sapphireEthProvider.getBalance(account)
-    // return utils.formatEther(balanceString)
   }
 
   const getBalanceOfWROSE = async () => {
