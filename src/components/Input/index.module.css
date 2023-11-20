@@ -1,6 +1,6 @@
 .inputGroup {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
     width: 100%;
@@ -23,7 +23,7 @@
 .inputGroup > input {
     margin: 0;
     flex: 1 1 auto;
-    max-width: 75%;
+    max-width: 60%;
     outline: none;
     border:none;
     background-image:none;
@@ -38,4 +38,12 @@
 
 .inputGroup > input::placeholder {
     opacity: .75;
+}
+
+@media screen and (min-width: 1000px) {
+    @media screen and (min-width: 1000px) {
+        .inputGroup > input {
+            max-width: 75%;
+        }
+    }
 }

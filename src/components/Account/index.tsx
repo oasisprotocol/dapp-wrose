@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { useWeb3 } from '../../providers/Web3Provider'
 import { StringUtils } from '../../utils/string.utils'
 import { JazzIcon } from '../JazzIcon'
+import { useMediaQuery } from 'react-responsive'
 
 interface Props {
   address: string;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export const Account: FC<Props> = ({ address, networkName }) => {
+  const isXlScreen = useMediaQuery({ query: '(min-width: 1000px)' })
   const { state: { explorerBaseUrl } } = useWeb3()
 
   const handleAccountClick = () => {
@@ -23,7 +25,7 @@ export const Account: FC<Props> = ({ address, networkName }) => {
       className={classes.account}
       onClick={handleAccountClick}
     >
-      <JazzIcon size={60} address={address} />
+      <JazzIcon size={isXlScreen ? 60 : 30} address={address} />
       <p className={classes.accountDetails}>
         <abbr title={address} className={classes.accountAddress}>{StringUtils.truncateAddress(address)}</abbr>
         <span className={classes.network}>{networkName}</span>
