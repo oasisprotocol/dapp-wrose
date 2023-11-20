@@ -175,8 +175,9 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         params: [{ chainId: utils.hexlify(toNetworkChainId) }],
       })
     } catch (e) {
-      // Chain is not available in the Metamask
-      if (e?.code !== 4902) {
+      // Metamask desktop - Throws e.code 4902 when chain is not available
+      // Metamask mobile - Error includes wallet_addEthereumChain & requested chainId in this case 0x5afe
+      if (e?.code !== 4902 && !(e?.message?.includes('wallet_addEthereumChain') && e?.message?.includes(utils.hexlify(toNetworkChainId)))) {
         throw e
       } else {
         _addNetwork(toNetworkChainId)
