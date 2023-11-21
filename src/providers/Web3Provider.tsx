@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useState } from 'react'
+import { createContext, FC, PropsWithChildren, useCallback, useState } from 'react'
 import { BigNumber, ethers, utils } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { NETWORKS } from '../constants/config'
@@ -7,14 +7,14 @@ import { NETWORKS } from '../constants/config'
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { MetaMaskError, UnknownNetworkError } from '../utils/errors'
-import detectEthereumProvider from '@metamask/detect-provider'
+import * as detectEthereumProvider from '@metamask/detect-provider'
 
 const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
 const MAX_GAS_LIMIT = 100000
 
 declare global {
   interface Window {
-    ethereum: ethers.providers.ExternalProvider
+    ethereum?: ethers.providers.ExternalProvider & ethers.providers.Web3Provider
   }
 }
 
@@ -60,36 +60,101 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     ...web3ProviderInitialState,
   })
 
+  const _connectionChanged = (isConnected: boolean) => {
+    setState(prevState => ({
+      ...prevState,
+      isConnected,
+    }))
+  }
+
+  const _accountsChanged = useCallback((accounts: string[]) => {
+    if (accounts.length <= 0) {
+      _connectionChanged(false)
+      return
+    }
+
+    const [account] = accounts
+    setState(prevState => ({
+      ...prevState,
+      account,
+    }))
+  }, [])
+
+  const _setNetworkSpecificVars = (
+    chainId: number,
+    sapphireEthProvider = state.sapphireEthProvider!,
+  ): void => {
+    if (!sapphireEthProvider) {
+      throw new Error('[Web3Context] Sapphire provider is required!')
+    }
+
+    if (!(chainId in NETWORKS)) {
+      throw new UnknownNetworkError('Unknown network!')
+    }
+
+    const { wRoseContractAddress, explorerBaseUrl, networkName } = NETWORKS[chainId]
+
+    const wRoseContract = new ethers.Contract(
+      wRoseContractAddress,
+      WrappedRoseMetadata.output.abi,
+      sapphireEthProvider.getSigner(),
+    )
+
+    setState(prevState => ({
+      ...prevState,
+      wRoseContract,
+      explorerBaseUrl,
+      networkName,
+      wRoseContractAddress,
+    }))
+  }
+
+  const _chainChanged = useCallback(() => {
+    window.location.reload()
+  }, [])
+
+  // TODO: This should probably use separate status, like isOffline(with warning message), to not interrupt the user flow
+  const _connect = useCallback(() => _connectionChanged(true), [])
+  const _disconnect = useCallback(() => _connectionChanged(false), [])
+
+  const _addEventListeners = (ethProvider = window.ethereum!) => {
+    ethProvider.on('accountsChanged', _accountsChanged)
+    ethProvider.on('chainChanged', _chainChanged)
+    ethProvider.on('connect', _connect)
+    ethProvider.on('disconnect', _disconnect)
+  }
+
+  const _removeEventListeners = (ethProvider = window.ethereum!) => {
+    ethProvider.off('accountsChanged', _accountsChanged)
+    ethProvider.off('chainChanged', _chainChanged)
+    ethProvider.off('connect', _connect)
+    ethProvider.off('disconnect', _disconnect)
+  }
+
   const _init = async (account: string) => {
+    _removeEventListeners()
+
     try {
-      const ethProvider = new ethers.providers.Web3Provider(window.ethereum)
+      const ethProvider = new ethers.providers.Web3Provider(window.ethereum!)
       const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
         sapphire.SapphireAnnex
 
       const network = await sapphireEthProvider.getNetwork()
 
-      if (!(network.chainId in NETWORKS)) {
-        return Promise.reject(new UnknownNetworkError('Unknown network!'))
+      try {
+        _setNetworkSpecificVars(network.chainId, sapphireEthProvider)
+      } catch (ex) {
+        return Promise.reject(ex)
       }
 
-      const { wRoseContractAddress, explorerBaseUrl, networkName } = NETWORKS[network.chainId]
-
-      const wRoseContract = new ethers.Contract(
-        wRoseContractAddress,
-        WrappedRoseMetadata.output.abi,
-        sapphireEthProvider.getSigner(),
-      )
+      _addEventListeners()
 
       setState(prevState => ({
         ...prevState,
         isConnected: true,
         ethProvider,
         sapphireEthProvider,
-        wRoseContract,
         account,
-        explorerBaseUrl,
-        networkName,
-        wRoseContractAddress,
       }))
     } catch (ex) {
       setState(prevState => ({
@@ -128,20 +193,20 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const connectWallet = async () => {
-    const [account] = await (window.ethereum?.request?.({ method: 'eth_requestAccounts' }) ||
+    const accounts: string[] = await (window.ethereum?.request?.({ method: 'eth_requestAccounts' }) ||
       Promise.resolve([]))
 
-    if (!account) {
+    if (!accounts || accounts?.length <= 0) {
       throw new Error('[Web3Context] Request account failed!')
     }
 
-    await _init(account)
+    await _init(accounts[0])
   }
 
   const _addNetwork = async (chainId: number) => {
     if (chainId === 0x5afe) {
       // Default to Sapphire Mainnet
-      await window.ethereum.request?.({
+      return await window.ethereum?.request?.({
         method: 'wallet_addEthereumChain',
         params: [
           {
@@ -163,7 +228,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const switchNetwork = async (toNetworkChainId = 0x5afe) => {
-    const ethProvider = new ethers.providers.Web3Provider(window.ethereum)
+    const ethProvider = new ethers.providers.Web3Provider(window.ethereum!)
     const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
       sapphire.SapphireAnnex
 
@@ -238,7 +303,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const symbol = 'WROSE'
 
     try {
-      await window.ethereum.request?.({
+      await window.ethereum?.request?.({
         method: 'wallet_watchAsset',
         params: {
           type: 'ERC20',
