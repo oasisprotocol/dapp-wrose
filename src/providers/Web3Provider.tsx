@@ -108,7 +108,6 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     return await sapphireEthProvider.getBalance(account)
-    // return utils.formatEther(balanceString)
   }
 
   const getBalanceOfWROSE = async () => {
@@ -175,8 +174,10 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         params: [{ chainId: utils.hexlify(toNetworkChainId) }],
       })
     } catch (e) {
-      // Chain is not available in the Metamask
-      if (e?.code !== 4902) {
+      // Metamask desktop - Throws e.code 4902 when chain is not available
+      // Metamask mobile - Throws generic -32603 (https://github.com/MetaMask/metamask-mobile/issues/3312)
+
+      if (e?.code !== 4902 && e?.code !== -32603) {
         throw e
       } else {
         _addNetwork(toNetworkChainId)
