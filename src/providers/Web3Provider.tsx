@@ -175,8 +175,9 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       })
     } catch (e) {
       // Metamask desktop - Throws e.code 4902 when chain is not available
-      // Metamask mobile - Error includes wallet_addEthereumChain & requested chainId in this case 0x5afe
-      if (e?.code !== 4902 && !(e?.message?.includes('wallet_addEthereumChain') && e?.message?.includes(utils.hexlify(toNetworkChainId)))) {
+      // Metamask mobile - Throws generic -32603 (https://github.com/MetaMask/metamask-mobile/issues/3312)
+
+      if (e?.code !== 4902 && e?.code !== -32603) {
         throw e
       } else {
         _addNetwork(toNetworkChainId)
