@@ -13,7 +13,7 @@ interface Props<T = any> extends PropsWithChildren {
   valueChange: (value: T) => void;
 }
 
-export const Input = <T extends any>(
+export const Input = <T extends string | number | readonly string[]>(
   {
     type,
     label,
@@ -33,7 +33,7 @@ export const Input = <T extends any>(
       <label htmlFor={inputId}>{label}</label>
       <input id={inputId} type={type} inputMode={inputMode} autoComplete='off' autoCorrect='off' pattern={pattern}
              placeholder={placeholder} disabled={disabled} value={value}
-             onChange={({ target: { value } }) => valueChange(value)} />
+             onChange={({ target: { value } }) => valueChange(value as T)} />
     </div>
   )
 }

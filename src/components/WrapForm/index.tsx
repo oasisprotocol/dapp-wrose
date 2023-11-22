@@ -1,4 +1,4 @@
-import { FC, FormEvent, useEffect, useState } from 'react'
+import { FC, FormEvent, MouseEvent, useEffect, useState } from 'react'
 import { Input } from '../Input'
 import classes from './index.module.css'
 import { Button } from '../Button'
@@ -51,7 +51,7 @@ export const WrapForm: FC = () => {
     setValue(amount)
   }
 
-  const handleToggleFormType = (e) => {
+  const handleToggleFormType = (e: MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -68,7 +68,7 @@ export const WrapForm: FC = () => {
 
       navigate(`/tx/${txReceipt.hash}?amount=${value}&action=${formType}`)
     } catch (ex) {
-      setError(ex?.message || JSON.stringify(ex))
+      setError((ex as Error)?.message || JSON.stringify(ex))
     }
   }
 

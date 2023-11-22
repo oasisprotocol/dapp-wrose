@@ -32,7 +32,7 @@ export const ConnectWallet: FC = () => {
       if (ex instanceof UnknownNetworkError) {
         setIsUnknownNetwork(true)
       } else {
-        setError(ex?.message || JSON.stringify(ex))
+        setError((ex as Error)?.message || JSON.stringify(ex))
       }
     } finally {
       setIsLoading(false)
@@ -45,7 +45,7 @@ export const ConnectWallet: FC = () => {
       await switchNetwork()
       setIsUnknownNetwork(false)
     } catch (ex) {
-      setError(ex?.message || JSON.stringify(ex))
+      setError((ex as Error)?.message || JSON.stringify(ex))
     } finally {
       setIsLoading(false)
     }
