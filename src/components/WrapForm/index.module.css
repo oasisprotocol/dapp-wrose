@@ -1,36 +1,36 @@
 .wrapForm {
-    display: flex;
-    flex-direction: column;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .wrapFormInputs {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: .625rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
 }
 
 .toggleBtn {
-    position: absolute;
-    left: 2.8125rem;
-    top: 50%;
-    transform: translateY(-50%);
+  position: absolute;
+  left: 2.8125rem;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .gasEstimateLabel {
-    text-align: center;
-    margin: 2rem 0 1rem;
+  text-align: center;
+  margin: 2rem 0 1rem;
 }
 
 @media screen and (min-width: 1000px) {
-    .toggleBtn {
-        left: 50%;
-        top: 50%;
-        transform: translate3d(-50%, -50%, 0);
-    }
+  .toggleBtn {
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
 
-    .gasEstimateLabel {
-        margin: 3.875rem 0 1.5rem;
-    }
+  .gasEstimateLabel {
+    margin: 3.875rem 0 1.5rem;
+  }
 }

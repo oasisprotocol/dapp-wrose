@@ -7,7 +7,7 @@ import { NETWORKS } from '../constants/config'
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { MetaMaskError, UnknownNetworkError } from '../utils/errors'
-import detectEthereumProvider from '@metamask/detect-provider';
+import detectEthereumProvider from '@metamask/detect-provider'
 
 const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
 const MAX_GAS_LIMIT = 100000
@@ -63,7 +63,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const _init = async (account: string) => {
     try {
       const ethProvider = new ethers.providers.Web3Provider(window.ethereum)
-      const sapphireEthProvider = sapphire.wrap(ethProvider) as (ethers.providers.Web3Provider & sapphire.SapphireAnnex)
+      const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
+        sapphire.SapphireAnnex
 
       const network = await sapphireEthProvider.getNetwork()
 
@@ -88,7 +89,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         account,
         explorerBaseUrl,
         networkName,
-        wRoseContractAddress
+        wRoseContractAddress,
       }))
     } catch (ex) {
       setState(prevState => ({
@@ -121,9 +122,9 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const isMetaMaskInstalled = async () => {
-    const provider = await detectEthereumProvider();
+    const provider = await detectEthereumProvider()
 
-    return !!window.ethereum && provider === window.ethereum;
+    return !!window.ethereum && provider === window.ethereum
   }
 
   const connectWallet = async () => {
@@ -138,7 +139,6 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const _addNetwork = async (chainId: number) => {
     if (chainId === 0x5afe) {
-
       // Default to Sapphire Mainnet
       await window.ethereum.request?.({
         method: 'wallet_addEthereumChain',
@@ -163,7 +163,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const switchNetwork = async (toNetworkChainId = 0x5afe) => {
     const ethProvider = new ethers.providers.Web3Provider(window.ethereum)
-    const sapphireEthProvider = sapphire.wrap(ethProvider) as (ethers.providers.Web3Provider & sapphire.SapphireAnnex)
+    const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
+      sapphire.SapphireAnnex
 
     const network = await sapphireEthProvider.getNetwork()
 

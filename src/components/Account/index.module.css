@@ -1,70 +1,70 @@
 .account {
-    position: absolute;
-    top: 1.25rem;
-    display: flex;
-    justify-items: center;
-    width: calc(100% - 2 * 1.875rem);
-    gap: 1rem;
-    border: 3px solid var(--brand-extra-dark);
-    border-radius: 12px;
-    background: var(--white);
-    padding: 0.7125rem;
-    cursor: pointer;
+  position: absolute;
+  top: 1.25rem;
+  display: flex;
+  justify-items: center;
+  width: calc(100% - 2 * 1.875rem);
+  gap: 1rem;
+  border: 3px solid var(--brand-extra-dark);
+  border-radius: 12px;
+  background: var(--white);
+  padding: 0.7125rem;
+  cursor: pointer;
 }
 
 .accountDetails {
-    display: inline-flex;
-    flex-direction: row-reverse;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    color: var(--brand-extra-dark);
-    text-align: left;
-    margin-bottom: 0;
+  display: inline-flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  color: var(--brand-extra-dark);
+  text-align: left;
+  margin-bottom: 0;
 }
 
 .accountAddress {
-    flex: 1 0 65%;
-    font-family: monospace;
-    text-decoration: none;
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 143%;
-    text-align: right;
+  flex: 1 0 65%;
+  font-family: monospace;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 143%;
+  text-align: right;
 }
 
 .network {
-    flex: 0 0 35%;
-    overflow: hidden;
-    max-height: 28px;
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 140%;
-    text-transform: capitalize;
+  flex: 0 0 35%;
+  overflow: hidden;
+  max-height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 140%;
+  text-transform: capitalize;
 }
 
 @media screen and (min-width: 1000px) {
-    .account {
-        position: fixed;
-        display: inline-flex;
-        width: auto;
-        top: 2.875rem;
-        right: 2.5rem;
-        padding: 1rem;
-    }
+  .account {
+    position: fixed;
+    display: inline-flex;
+    width: auto;
+    top: 2.875rem;
+    right: 2.5rem;
+    padding: 1rem;
+  }
 
-    .accountDetails {
-        flex-direction: column;
-        justify-items: center;
-        text-align: right;
-    }
+  .accountDetails {
+    flex-direction: column;
+    justify-items: center;
+    text-align: right;
+  }
 
-    .accountAddress {
-        flex: unset;
-    }
+  .accountAddress {
+    flex: unset;
+  }
 
-    .network {
-        flex: unset;
-    }
+  .network {
+    flex: unset;
+  }
 }

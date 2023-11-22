@@ -1,7 +1,7 @@
 interface NetworkConfiguration {
-  wRoseContractAddress: string;
-  explorerBaseUrl: string;
-  networkName: string;
+  wRoseContractAddress: string
+  explorerBaseUrl: string
+  networkName: string
 }
 
 export const NETWORKS: Record<number, NetworkConfiguration> = {

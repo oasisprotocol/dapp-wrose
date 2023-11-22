@@ -1,31 +1,31 @@
 .openInExplorerBtn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1.06rem 1.5rem;
-    margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.06rem 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .spinnerContainer {
-    margin-top: 5rem;
-    margin-bottom: 2.625rem;
+  margin-top: 5rem;
+  margin-bottom: 2.625rem;
 }
 
 .subHeader {
-    text-align: center;
-    margin-bottom: 3.625rem;
+  text-align: center;
+  margin-bottom: 3.625rem;
 }
 
 .h100 {
-    font-size: 75px;
-    font-weight: 400;
-    line-height: 150%;
-    text-align: center;
+  font-size: 75px;
+  font-weight: 400;
+  line-height: 150%;
+  text-align: center;
 }
 
 @media screen and (min-width: 1000px) {
-    .spinnerContainer {
-        margin-top: unset;
-    }
+  .spinnerContainer {
+    margin-top: unset;
+  }
 }

@@ -11,12 +11,12 @@ import { WrapFormType } from '../../providers/WrapFormProvider'
 enum TransactionStatus {
   Loading,
   Success,
-  Fail
+  Fail,
 }
 
 enum TransactionType {
   Rose,
-  WRose
+  WRose,
 }
 
 export const Transaction: FC = () => {
@@ -24,8 +24,11 @@ export const Transaction: FC = () => {
   const { txHash } = useParams()
   const [searchParams] = useSearchParams()
   const amount = searchParams.get('amount') ?? null
-  const action: WrapFormType = searchParams.get('action') as WrapFormType ?? WrapFormType.WRAP
-  const { state: { explorerBaseUrl }, getTransaction } = useWeb3()
+  const action: WrapFormType = (searchParams.get('action') as WrapFormType) ?? WrapFormType.WRAP
+  const {
+    state: { explorerBaseUrl },
+    getTransaction,
+  } = useWeb3()
   const [status, setStatus] = useState(TransactionStatus.Loading)
   const [type, setType] = useState<TransactionType | null>(null)
 
@@ -64,8 +67,10 @@ export const Transaction: FC = () => {
     navigate('/wrapper')
   }
 
-  return (<>
-      {status === TransactionStatus.Loading && (<div>
+  return (
+    <>
+      {status === TransactionStatus.Loading && (
+        <div>
           <div className={classes.spinnerContainer}>
             <Spinner />
           </div>
@@ -76,43 +81,38 @@ export const Transaction: FC = () => {
           </h3>
         </div>
       )}
-      {status === TransactionStatus.Success && (<div>
-          <p className={classes.h100}>
-            &#x1F389;
-          </p>
+      {status === TransactionStatus.Success && (
+        <div>
+          <p className={classes.h100}>&#x1F389;</p>
           <h3 className={classes.subHeader}>
             Congrats!
             <br />
             You received
-            {type === TransactionType.WRose && (<b>&nbsp;{amount} WROSE</b>)}
-            {type === TransactionType.Rose && (<b>&nbsp;{amount} ROSE</b>)}
+            {type === TransactionType.WRose && <b>&nbsp;{amount} WROSE</b>}
+            {type === TransactionType.Rose && <b>&nbsp;{amount} ROSE</b>}
           </h3>
 
-          {explorerBaseUrl && txHash &&
-            (<Button className={classes.openInExplorerBtn} onClick={handleNavigateToExplorer}
-                     fullWidth>
+          {explorerBaseUrl && txHash && (
+            <Button className={classes.openInExplorerBtn} onClick={handleNavigateToExplorer} fullWidth>
               View on explorer
               <OpenInNewIcon />
-            </Button>)
-          }
-          <Button variant='secondary' onClick={handleNavigateBack}
-                  fullWidth>
+            </Button>
+          )}
+          <Button variant="secondary" onClick={handleNavigateBack} fullWidth>
             Close
           </Button>
         </div>
       )}
-      {status === TransactionStatus.Fail && (<div>
-          <p className={classes.h100}>
-            &#x2755;
-          </p>
+      {status === TransactionStatus.Fail && (
+        <div>
+          <p className={classes.h100}>&#x2755;</p>
           <h3 className={classes.subHeader}>
             There was an unexpected error.
             <br />
             Please try again.
           </h3>
 
-          <Button onClick={handleNavigateBack}
-                  fullWidth>
+          <Button onClick={handleNavigateBack} fullWidth>
             Retry
           </Button>
         </div>

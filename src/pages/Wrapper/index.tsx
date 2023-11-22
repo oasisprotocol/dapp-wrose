@@ -8,27 +8,37 @@ import { useWrapForm, WrapFormType } from '../../providers/WrapFormProvider'
 import { useWeb3 } from '../../providers/Web3Provider'
 
 interface PercentageEntry {
-  value: BigNumber;
-  label: string;
+  value: BigNumber
+  label: string
 }
 
-const percentageList: PercentageEntry[] = [{
-  label: '10%',
-  value: BigNumber.from(10),
-}, {
-  label: '25%',
-  value: BigNumber.from(25),
-}, {
-  label: '50%',
-  value: BigNumber.from(50),
-}, {
-  label: 'Max',
-  value: BigNumber.from(100),
-}]
+const percentageList: PercentageEntry[] = [
+  {
+    label: '10%',
+    value: BigNumber.from(10),
+  },
+  {
+    label: '25%',
+    value: BigNumber.from(25),
+  },
+  {
+    label: '50%',
+    value: BigNumber.from(50),
+  },
+  {
+    label: 'Max',
+    value: BigNumber.from(100),
+  },
+]
 
 export const Wrapper: FC = () => {
   const { addTokenToWallet } = useWeb3()
-  const { state: { isLoading, balance, wRoseBalance, formType }, init, setAmount, getFeeAmount } = useWrapForm()
+  const {
+    state: { isLoading, balance, wRoseBalance, formType },
+    init,
+    setAmount,
+    getFeeAmount,
+  } = useWrapForm()
 
   useEffect(() => {
     init()
@@ -55,17 +65,23 @@ export const Wrapper: FC = () => {
   return (
     <div>
       <div className={classes.subHeader}>
-        <p>
-          Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-        </p>
+        <p>Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.</p>
 
-        <Button className={classes.importWRoseBtn} onClick={addTokenToWallet}>Import WROSE to Wallet</Button>
+        <Button className={classes.importWRoseBtn} onClick={addTokenToWallet}>
+          Import WROSE to Wallet
+        </Button>
       </div>
 
       <div className={classes.amountPercList}>
         {percentageList.map(({ label, value }) => (
-          <Button disabled={isLoading} onClick={() => handlePercentageCalc(value)} key={label}
-                  variant='tertiary'>{label}</Button>
+          <Button
+            disabled={isLoading}
+            onClick={() => handlePercentageCalc(value)}
+            key={label}
+            variant="tertiary"
+          >
+            {label}
+          </Button>
         ))}
       </div>
 
