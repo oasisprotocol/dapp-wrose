@@ -1,33 +1,34 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import classes from './index.module.css'
 import { Button } from '../../components/Button'
 import { UnknownNetworkError } from '../../utils/errors'
 import { Alert } from '../../components/Alert'
-import { METAMASK_HOME_PAGE } from '../../constants/config'
+import { AuthData, login, register } from '../../utils/authzn'
 import { useWeb3 } from '../../hooks/useWeb3'
 
+enum AuthType {
+  Login,
+  Register,
+}
+
 export const ConnectWallet: FC = () => {
-  const { connectWallet, switchNetwork, isMetaMaskInstalled } = useWeb3()
+  const { connectWallet } = useWeb3()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const [hasMetaMaskWallet, setHasMetaMaskWallet] = useState(true)
   const [isUnknownNetwork, setIsUnknownNetwork] = useState(false)
 
-  useEffect(() => {
-    const init = async () => {
-      setIsLoading(true)
-      setHasMetaMaskWallet(await isMetaMaskInstalled())
-      setIsLoading(false)
-    }
-
-    init()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.ethereum])
-
-  const handleConnectWallet = async () => {
+  const handleConnectWallet = async (type: AuthType) => {
     setIsLoading(true)
     try {
-      await connectWallet()
+      let authData: AuthData
+
+      if (type === AuthType.Register) {
+        authData = await register()
+      } else {
+        authData = await login()
+      }
+
+      await connectWallet(authData)
     } catch (ex) {
       if (ex instanceof UnknownNetworkError) {
         setIsUnknownNetwork(true)
@@ -39,81 +40,30 @@ export const ConnectWallet: FC = () => {
     }
   }
 
-  const handleSwitchNetwork = async () => {
-    setIsLoading(true)
-    try {
-      await switchNetwork()
-      setIsUnknownNetwork(false)
-    } catch (ex) {
-      setError((ex as Error)?.message || JSON.stringify(ex))
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleInstallMetaMask = async () => {
-    window.open(METAMASK_HOME_PAGE, '_blank', 'noopener,noreferrer')
-  }
-
   return (
     <>
-      {!hasMetaMaskWallet && (
+      {!isUnknownNetwork && (
         <div>
           <p className={classes.subHeader}>
             Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
             <br />
-            MetaMask not detected, please install it.
+            Please connect with your AUTHZN account to get started.
           </p>
 
-          <Button
-            className={classes.installMetaMaskBtn}
-            onClick={handleInstallMetaMask}
-            fullWidth
-            disabled={isLoading}
-          >
-            Install MetaMask
+          <Button onClick={() => handleConnectWallet(AuthType.Login)} disabled={isLoading} fullWidth>
+            Login
           </Button>
+          <p className={classes.haveAccount}>Not signed up yet?</p>
           <Button
             variant="secondary"
-            onClick={() => setHasMetaMaskWallet(true)}
+            onClick={() => handleConnectWallet(AuthType.Register)}
             disabled={isLoading}
             fullWidth
           >
-            Skip
+            Register
           </Button>
+          {error && <Alert variant="danger">{error}</Alert>}
         </div>
-      )}
-      {hasMetaMaskWallet && (
-        <>
-          {!isUnknownNetwork && (
-            <div>
-              <p className={classes.subHeader}>
-                Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-                <br />
-                Please connect your wallet to get started.
-              </p>
-
-              <Button onClick={handleConnectWallet} disabled={isLoading} fullWidth>
-                Connect wallet
-              </Button>
-              {error && <Alert variant="danger">{error}</Alert>}
-            </div>
-          )}
-          {isUnknownNetwork && (
-            <div>
-              <p className={classes.subHeader}>
-                Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-                <br />
-                Please switch to another network to get started.
-              </p>
-
-              <Button onClick={handleSwitchNetwork} disabled={isLoading} fullWidth>
-                Switch Network
-              </Button>
-              {error && <Alert variant="danger">{error}</Alert>}
-            </div>
-          )}
-        </>
       )}
     </>
   )

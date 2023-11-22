@@ -4,7 +4,7 @@ import { BigNumber } from 'ethers'
 import { Button } from '../../components/Button'
 import { NumberUtils } from '../../utils/number.utils'
 import { WrapForm } from '../../components/WrapForm'
-import { useWeb3 } from '../../hooks/useWeb3'
+import { FAUCET_PAGE } from '../../constants/config'
 import { useWrapForm } from '../../hooks/useWrapForm'
 import { WrapFormType } from '../../utils/types'
 
@@ -34,10 +34,6 @@ const percentageList: PercentageEntry[] = [
 
 export const Wrapper: FC = () => {
   const {
-    state: { account },
-    addTokenToWallet,
-  } = useWeb3()
-  const {
     state: { isLoading, balance, wRoseBalance, formType },
     init,
     setAmount,
@@ -47,7 +43,7 @@ export const Wrapper: FC = () => {
   useEffect(() => {
     init()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account])
+  }, [])
 
   const handlePercentageCalc = (percentage: BigNumber) => {
     if (formType === WrapFormType.WRAP) {
@@ -66,13 +62,17 @@ export const Wrapper: FC = () => {
     }
   }
 
+  const navigateToFaucet = () => {
+    window.open(FAUCET_PAGE, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <div>
       <div className={classes.subHeader}>
         <p>Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.</p>
 
-        <Button className={classes.importWRoseBtn} onClick={addTokenToWallet}>
-          Import WROSE to Wallet
+        <Button className={classes.testTokensBtn} onClick={navigateToFaucet}>
+          Request test tokens
         </Button>
       </div>
 

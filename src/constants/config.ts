@@ -18,3 +18,4 @@ export const NETWORKS: Record<number, NetworkConfiguration> = {
 }
 
 export const METAMASK_HOME_PAGE = 'https://metamask.io/'
+export const FAUCET_PAGE = 'https://faucet.testnet.oasis.dev/?paratime=sapphire'

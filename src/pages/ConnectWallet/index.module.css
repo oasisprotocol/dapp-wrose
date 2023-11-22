@@ -2,6 +2,11 @@
   margin-bottom: 34dvh;
 }
 
+.haveAccount {
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
 .installMetaMaskBtn {
   margin-bottom: 1.5rem;
 }
