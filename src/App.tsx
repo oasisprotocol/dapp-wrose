@@ -1,9 +1,6 @@
 import { FC } from 'react'
 import { Layout } from './components/Layout'
-import {
-  createHashRouter,
-  RouterProvider,
-} from 'react-router-dom'
+import { createHashRouter, RouterProvider } from 'react-router-dom'
 import { Wrapper } from './pages/Wrapper'
 import { Web3ContextProvider } from './providers/Web3Provider'
 import { ConnectWallet } from './pages/ConnectWallet'
@@ -21,7 +18,11 @@ const router = createHashRouter([
       },
       {
         path: 'wrapper',
-        element: <WrapFormContextProvider><Wrapper /></WrapFormContextProvider>,
+        element: (
+          <WrapFormContextProvider>
+            <Wrapper />
+          </WrapFormContextProvider>
+        ),
       },
       {
         path: 'tx/:txHash',

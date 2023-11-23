@@ -1,56 +1,56 @@
 .button {
-    border-radius: 46px;
-    border: 1px solid transparent;
-    box-shadow: none;
-    cursor: pointer;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 125%;
-    outline: none;
-    padding: 1.125rem 1.5rem;
-    text-decoration: none;
-    user-select: none;
-    text-transform: capitalize;
-    color: var(--white);
+  border-radius: 46px;
+  border: 1px solid transparent;
+  box-shadow: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 125%;
+  outline: none;
+  padding: 1.125rem 1.5rem;
+  text-decoration: none;
+  user-select: none;
+  text-transform: capitalize;
+  color: var(--white);
 }
 
 .buttonPrimary {
-    border-color: var(--gray-medium-light);
-    background-color: var(--brand-medium);
+  border-color: var(--gray-medium-light);
+  background-color: var(--brand-medium);
 }
 
 .buttonSecondary {
-    border-color: var(--gray-medium-light);
-    background-color: transparent;
+  border-color: var(--gray-medium-light);
+  background-color: transparent;
 }
 
 .buttonTertiary {
-    border-width: 2px;
-    border-color: var(--gray-medium-light);
-    background-color: transparent;
-    min-width: 75px;
-    padding: 0.4rem;
-    line-height: 120%;
-    border-radius: 10px;
-    font-size: 13.5px;
+  border-width: 2px;
+  border-color: var(--gray-medium-light);
+  background-color: transparent;
+  min-width: 75px;
+  padding: 0.4rem;
+  line-height: 120%;
+  border-radius: 10px;
+  font-size: 13.5px;
 }
 
 .buttonDisabled {
-    cursor: not-allowed;
-    border-color: var(--gray-medium-light);
-    background-color: var(--gray-medium-dark);
-    opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--gray-medium-light);
+  background-color: var(--gray-medium-dark);
+  opacity: 0.5;
 }
 
 .fullWidth {
-    width: 100%;
+  width: 100%;
 }
 
 @media screen and (min-width: 1000px) {
-    .buttonTertiary {
-        min-width: 100px;
-        padding: 0.58rem 1.5rem;
-        font-size: 18px;
-    }
+  .buttonTertiary {
+    min-width: 100px;
+    padding: 0.58rem 1.5rem;
+    font-size: 18px;
+  }
 }

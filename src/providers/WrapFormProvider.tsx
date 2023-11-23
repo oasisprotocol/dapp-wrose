@@ -12,7 +12,7 @@ interface WrapFormProviderState {
   isLoading: boolean
   amount: BigNumber | null
   formType: WrapFormType
-  balance: BigNumber,
+  balance: BigNumber
   wRoseBalance: BigNumber
 }
 
@@ -20,8 +20,8 @@ interface WrapFormProviderContext {
   readonly state: WrapFormProviderState
   init: () => void
   setAmount: (amount: BigNumberish) => void
-  toggleFormType: (amount: BigNumber | null) => void;
-  submit: (amount: BigNumber) => Promise<TransactionResponse>;
+  toggleFormType: (amount: BigNumber | null) => void
+  submit: (amount: BigNumber) => Promise<TransactionResponse>
   getFeeAmount: () => BigNumber
 }
 
@@ -36,7 +36,13 @@ const wrapFormProviderInitialState: WrapFormProviderState = {
 export const WrapFormContext = createContext<WrapFormProviderContext>({} as WrapFormProviderContext)
 
 export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { state: { isConnected }, getBalance, getBalanceOfWROSE, wrap, unwrap } = useWeb3()
+  const {
+    state: { isConnected },
+    getBalance,
+    getBalanceOfWROSE,
+    wrap,
+    unwrap,
+  } = useWeb3()
   const [state, setState] = useState<WrapFormProviderState>({
     ...wrapFormProviderInitialState,
   })
@@ -55,13 +61,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
 
     _setIsLoading(true)
 
-    const [
-      balance,
-      wRoseBalance,
-    ] = await Promise.all([
-      getBalance(),
-      getBalanceOfWROSE(),
-    ])
+    const [balance, wRoseBalance] = await Promise.all([getBalance(), getBalanceOfWROSE()])
 
     setState(prevState => ({
       ...prevState,

@@ -1,41 +1,41 @@
 .subHeader {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .amountPercList {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-bottom: 1.625rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 1.625rem;
 }
 
 .importWRoseBtn.importWRoseBtn {
-    display: flex;
-    justify-content: center;
-    padding: .5rem;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    text-transform: none;
-    border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  text-transform: none;
+  border-radius: 10px;
 }
 
 @media screen and (min-width: 1000px) {
-    .subHeader {
-        gap: 1rem;
-        margin-bottom: 4.85rem;
-    }
+  .subHeader {
+    gap: 1rem;
+    margin-bottom: 4.85rem;
+  }
 
-    .importWRoseBtn.importWRoseBtn {
-        justify-content: flex-end;
-        margin-left: auto;
-    }
+  .importWRoseBtn.importWRoseBtn {
+    justify-content: flex-end;
+    margin-left: auto;
+  }
 
-    .amountPercList {
-        width: 75%;
-        margin: 0 auto 1.5rem;
-    }
+  .amountPercList {
+    width: 75%;
+    margin: 0 auto 1.5rem;
+  }
 }

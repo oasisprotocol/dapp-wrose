@@ -6,7 +6,9 @@ import { Account } from '../Account'
 import { LogoIcon } from '../icons/LogoIcon'
 
 export const Layout: FC<PropsWithChildren> = () => {
-  const { state: { isConnected, account, networkName } } = useWeb3()
+  const {
+    state: { isConnected, account, networkName },
+  } = useWeb3()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -28,7 +30,9 @@ export const Layout: FC<PropsWithChildren> = () => {
   return (
     <main className={classes.layout}>
       {isConnected && account && <Account address={account} networkName={networkName ?? ''} />}
-      <h2 className={classes.header}>ROSE <LogoIcon /> wrapper</h2>
+      <h2 className={classes.header}>
+        ROSE <LogoIcon /> wrapper
+      </h2>
       <Outlet />
     </main>
   )

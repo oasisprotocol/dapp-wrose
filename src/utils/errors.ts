@@ -1,9 +1,9 @@
 export class UnknownNetworkError extends Error {
   constructor(message: string) {
-    super(message);
+    super(message)
   }
 }
 
 export interface MetaMaskError extends Error {
-  code: number;
+  code: number
 }

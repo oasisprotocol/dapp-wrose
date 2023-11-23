@@ -4,8 +4,8 @@ import { FC, memo, useEffect, useRef } from 'react'
 import { NumberUtils } from '../../utils/number.utils'
 
 interface JazzIconProps {
-  address: string;
-  size: number;
+  address: string
+  size: number
 }
 
 const JazzIconCmp: FC<JazzIconProps> = ({ address, size }) => {

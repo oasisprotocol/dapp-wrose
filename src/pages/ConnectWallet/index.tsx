@@ -57,43 +57,64 @@ export const ConnectWallet: FC = () => {
 
   return (
     <>
-      {!hasMetaMaskWallet && (<div>
-        <p className={classes.subHeader}>
-          Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-          <br />
-          MetaMask not detected, please install it.
-        </p>
-
-        <Button className={classes.installMetaMaskBtn} onClick={handleInstallMetaMask} fullWidth disabled={isLoading}>
-          Install MetaMask
-        </Button>
-        <Button variant='secondary' onClick={() => setHasMetaMaskWallet(true)} disabled={isLoading}
-                fullWidth>
-          Skip
-        </Button>
-      </div>)}
-      {hasMetaMaskWallet && (<>
-        {!isUnknownNetwork && (<div>
+      {!hasMetaMaskWallet && (
+        <div>
           <p className={classes.subHeader}>
             Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
             <br />
-            Please connect your wallet to get started.
+            MetaMask not detected, please install it.
           </p>
 
-          <Button onClick={handleConnectWallet} disabled={isLoading} fullWidth>Connect wallet</Button>
-          {error && <Alert variant='danger'>{error}</Alert>}
-        </div>)}
-        {isUnknownNetwork && (<div>
-          <p className={classes.subHeader}>
-            Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-            <br />
-            Please switch to another network to get started.
-          </p>
+          <Button
+            className={classes.installMetaMaskBtn}
+            onClick={handleInstallMetaMask}
+            fullWidth
+            disabled={isLoading}
+          >
+            Install MetaMask
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setHasMetaMaskWallet(true)}
+            disabled={isLoading}
+            fullWidth
+          >
+            Skip
+          </Button>
+        </div>
+      )}
+      {hasMetaMaskWallet && (
+        <>
+          {!isUnknownNetwork && (
+            <div>
+              <p className={classes.subHeader}>
+                Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
+                <br />
+                Please connect your wallet to get started.
+              </p>
 
-          <Button onClick={handleSwitchNetwork} disabled={isLoading} fullWidth>Switch Network</Button>
-          {error && <Alert variant='danger'>{error}</Alert>}
-        </div>)}
-      </>)}
+              <Button onClick={handleConnectWallet} disabled={isLoading} fullWidth>
+                Connect wallet
+              </Button>
+              {error && <Alert variant="danger">{error}</Alert>}
+            </div>
+          )}
+          {isUnknownNetwork && (
+            <div>
+              <p className={classes.subHeader}>
+                Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
+                <br />
+                Please switch to another network to get started.
+              </p>
+
+              <Button onClick={handleSwitchNetwork} disabled={isLoading} fullWidth>
+                Switch Network
+              </Button>
+              {error && <Alert variant="danger">{error}</Alert>}
+            </div>
+          )}
+        </>
+      )}
     </>
   )
 }
