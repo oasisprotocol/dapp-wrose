@@ -2,11 +2,12 @@ import { FC, FormEvent, MouseEvent, useEffect, useState } from 'react'
 import { Input } from '../Input'
 import classes from './index.module.css'
 import { Button } from '../Button'
-import { useWrapForm, WrapFormType } from '../../providers/WrapFormProvider'
 import { utils } from 'ethers'
 import { Alert } from '../Alert'
 import { useNavigate } from 'react-router-dom'
 import { ToggleButton } from '../ToggleButton'
+import { useWrapForm } from '../../hooks/useWrapForm'
+import { WrapFormType } from '../../utils/types'
 
 const AMOUNT_PATTERN = '^[0-9]*[.,]?[0-9]*$'
 

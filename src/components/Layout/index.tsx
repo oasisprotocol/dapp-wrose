@@ -1,9 +1,9 @@
 import { FC, PropsWithChildren, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import classes from './index.module.css'
-import { useWeb3 } from '../../providers/Web3Provider'
 import { Account } from '../Account'
 import { LogoIcon } from '../icons/LogoIcon'
+import { useWeb3 } from '../../hooks/useWeb3'
 
 export const Layout: FC<PropsWithChildren> = () => {
   const {

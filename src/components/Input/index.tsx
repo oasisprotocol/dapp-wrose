@@ -1,7 +1,7 @@
 import classes from './index.module.css'
 import { HTMLInputTypeAttribute, PropsWithChildren, useId } from 'react'
 
-interface Props<T = any> extends PropsWithChildren {
+interface Props<T> extends PropsWithChildren {
   type: HTMLInputTypeAttribute
   label: string
   pattern?: string

@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
+import { createContext, FC, PropsWithChildren, useState } from 'react'
 import { BigNumber, ethers, utils } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { NETWORKS } from '../constants/config'
@@ -128,7 +128,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const connectWallet = async () => {
-    const [account] = await window.ethereum.request?.({ method: 'eth_requestAccounts' })
+    const [account] = await (window.ethereum?.request?.({ method: 'eth_requestAccounts' }) ||
+      Promise.resolve([]))
 
     if (!account) {
       throw new Error('[Web3Context] Request account failed!')
@@ -269,13 +270,4 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   return <Web3Context.Provider value={providerState}>{children}</Web3Context.Provider>
-}
-
-export const useWeb3 = () => {
-  const value = useContext(Web3Context)
-  if (value === undefined) {
-    throw new Error('[useWeb3] Component not wrapped within a Provider')
-  }
-
-  return value
 }

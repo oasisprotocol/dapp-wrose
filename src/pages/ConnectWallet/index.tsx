@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from 'react'
 import classes from './index.module.css'
-import { useWeb3 } from '../../providers/Web3Provider'
 import { Button } from '../../components/Button'
 import { UnknownNetworkError } from '../../utils/errors'
 import { Alert } from '../../components/Alert'
 import { METAMASK_HOME_PAGE } from '../../constants/config'
+import { useWeb3 } from '../../hooks/useWeb3'
 
 export const ConnectWallet: FC = () => {
   const { connectWallet, switchNetwork, isMetaMaskInstalled } = useWeb3()

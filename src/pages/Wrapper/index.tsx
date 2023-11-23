@@ -4,8 +4,9 @@ import { BigNumber } from 'ethers'
 import { Button } from '../../components/Button'
 import { NumberUtils } from '../../utils/number.utils'
 import { WrapForm } from '../../components/WrapForm'
-import { useWrapForm, WrapFormType } from '../../providers/WrapFormProvider'
-import { useWeb3 } from '../../providers/Web3Provider'
+import { useWeb3 } from '../../hooks/useWeb3'
+import { useWrapForm } from '../../hooks/useWrapForm'
+import { WrapFormType } from '../../utils/types'
 
 interface PercentageEntry {
   value: BigNumber
