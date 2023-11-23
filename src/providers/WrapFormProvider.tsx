@@ -1,12 +1,8 @@
-import { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
+import { createContext, FC, PropsWithChildren, useState } from 'react'
 import { BigNumber, BigNumberish, utils } from 'ethers'
-import { useWeb3 } from './Web3Provider'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
-
-export enum WrapFormType {
-  WRAP = 'wrap',
-  UNWRAP = 'unwrap',
-}
+import { useWeb3 } from '../hooks/useWeb3'
+import { WrapFormType } from '../utils/types'
 
 interface WrapFormProviderState {
   isLoading: boolean
@@ -165,13 +161,4 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
   }
 
   return <WrapFormContext.Provider value={providerState}>{children}</WrapFormContext.Provider>
-}
-
-export const useWrapForm = () => {
-  const value = useContext(WrapFormContext)
-  if (value === undefined) {
-    throw new Error('[useWrapForm] Component not wrapped within a Provider')
-  }
-
-  return value
 }

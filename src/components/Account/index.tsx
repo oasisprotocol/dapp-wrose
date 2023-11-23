@@ -1,9 +1,9 @@
 import classes from './index.module.css'
 import { FC } from 'react'
-import { useWeb3 } from '../../providers/Web3Provider'
 import { StringUtils } from '../../utils/string.utils'
 import { JazzIcon } from '../JazzIcon'
 import { useMediaQuery } from 'react-responsive'
+import { useWeb3 } from '../../hooks/useWeb3'
 
 interface Props {
   address: string

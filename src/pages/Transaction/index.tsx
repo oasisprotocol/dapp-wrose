@@ -1,12 +1,12 @@
 import { FC, useEffect, useState } from 'react'
 import { Button } from '../../components/Button'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { useWeb3 } from '../../providers/Web3Provider'
 import { OpenInNewIcon } from '../../components/icons/OpenInNewIcon'
 import classes from './index.module.css'
 import { Spinner } from '../../components/Spinner'
 import { StringUtils } from '../../utils/string.utils'
-import { WrapFormType } from '../../providers/WrapFormProvider'
+import { useWeb3 } from '../../hooks/useWeb3'
+import { WrapFormType } from '../../utils/types'
 
 enum TransactionStatus {
   Loading,
