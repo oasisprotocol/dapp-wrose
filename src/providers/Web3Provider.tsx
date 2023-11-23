@@ -6,7 +6,7 @@ import { NETWORKS } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23294/0x8Bc2B030b299964eEfb5e1e0b36991352E56D2D3/
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
-import { UnknownNetworkError } from '../utils/errors'
+import { MetaMaskError, UnknownNetworkError } from '../utils/errors'
 import detectEthereumProvider from '@metamask/detect-provider';
 
 const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
@@ -174,18 +174,19 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         params: [{ chainId: utils.hexlify(toNetworkChainId) }],
       })
     } catch (e) {
+      const metaMaskError = e as MetaMaskError
       // Metamask desktop - Throws e.code 4902 when chain is not available
       // Metamask mobile - Throws generic -32603 (https://github.com/MetaMask/metamask-mobile/issues/3312)
 
-      if (e?.code !== 4902 && e?.code !== -32603) {
-        throw e
+      if (metaMaskError?.code !== 4902 && metaMaskError?.code !== -32603) {
+        throw metaMaskError
       } else {
         _addNetwork(toNetworkChainId)
       }
     }
   }
 
-  const wrap = async (amount) => {
+  const wrap = async (amount: string) => {
     if (!amount) {
       throw new Error('[amount] is required!')
     }
@@ -199,7 +200,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return await wRoseContract.deposit({ value: amount, gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
   }
 
-  const unwrap = async (amount) => {
+  const unwrap = async (amount: string) => {
     if (!amount) {
       throw new Error('[amount] is required!')
     }

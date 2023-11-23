@@ -3,7 +3,7 @@ const truncateRegex = /^(0x[a-zA-Z0-9]{4})[a-zA-Z0-9]+([a-zA-Z0-9]{4})$/
 export abstract class StringUtils {
   static truncateAddress = (address: string) => {
     const matches = address.match(truncateRegex)
-    if (matches.length <= 0)
+    if (!matches || matches?.length <= 0)
       return address
 
     const [, start, end] = matches
