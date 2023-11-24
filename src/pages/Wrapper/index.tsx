@@ -33,7 +33,10 @@ const percentageList: PercentageEntry[] = [
 ]
 
 export const Wrapper: FC = () => {
-  const { addTokenToWallet } = useWeb3()
+  const {
+    state: { account },
+    addTokenToWallet,
+  } = useWeb3()
   const {
     state: { isLoading, balance, wRoseBalance, formType },
     init,
@@ -44,7 +47,7 @@ export const Wrapper: FC = () => {
   useEffect(() => {
     init()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [account])
 
   const handlePercentageCalc = (percentage: BigNumber) => {
     if (formType === WrapFormType.WRAP) {
