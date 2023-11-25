@@ -140,12 +140,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         sapphire.SapphireAnnex
 
       const network = await sapphireEthProvider.getNetwork()
-
-      try {
-        _setNetworkSpecificVars(network.chainId, sapphireEthProvider)
-      } catch (ex) {
-        return Promise.reject(ex)
-      }
+      _setNetworkSpecificVars(network.chainId, sapphireEthProvider)
 
       _addEventListeners()
 
@@ -162,7 +157,11 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
         isConnected: false,
       }))
 
-      throw new Error('[Web3Context] Unable to initialize providers!')
+      if (ex instanceof UnknownNetworkError) {
+        throw ex
+      } else {
+        throw new Error('[Web3Context] Unable to initialize providers!')
+      }
     }
   }
 
