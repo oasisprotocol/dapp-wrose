@@ -1,0 +1,40 @@
+# NOTE: This name appears in GitHub's Checks API and in workflow's status badge.
+name: ci-lint
+
+# Trigger the workflow when:
+on:
+  # A push occurs to one of the matched branches.
+  push:
+    branches: [master]
+  # Or when a pull request event occurs for a pull request against one of the
+  # matched branches.
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint:
+    # NOTE: This name appears in GitHub's Checks API.
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Checkout pull request HEAD commit instead of merge commit.
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: ESLint
+        # Disallow warnings and always throw errors.
+        run: yarn lint
+        # Always run this step so that all linting errors can be seen at once.
+        if: always()
+      - name: Validate TypeScript
+        run: yarn checkTs
+        # Always run this step so that all linting errors can be seen at once.
+        if: always()
