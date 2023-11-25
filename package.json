@@ -2,12 +2,12 @@
   "name": "dapp-wrose",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "build": "tsc && vite build",
     "checkTs": "tsc --noEmit",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint-git": "node ./internals/scripts/gitlint.js",
     "prettify": "prettier src --write",
     "preview": "vite preview"
   },
