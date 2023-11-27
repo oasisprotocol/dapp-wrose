@@ -1,0 +1,42 @@
+# NOTE: This name appears in GitHub's Checks API and in workflow's status badge.
+name: ci-build
+
+# Trigger the workflow when:
+on:
+  # A push occurs to one of the matched branches.
+  push:
+    branches: [master]
+  # Or when a pull request event occurs for a pull request against one of the
+  # matched branches.
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    # NOTE: This name appears in GitHub's Checks API.
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Set workflow variables
+        # Id is needed to access output in a next step.
+        id: vars
+        run: |
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build app
+        run: yarn build
+      - name: Upload build artifacts
+        # Upload build artifacts on push event.
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          name: oasis-dapp-wrose-${{ steps.vars.outputs.SHORT_SHA }}
+          path: build
