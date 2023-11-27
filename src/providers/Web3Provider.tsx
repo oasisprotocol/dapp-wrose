@@ -7,7 +7,7 @@ import { NETWORKS } from '../constants/config'
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { MetaMaskError, UnknownNetworkError } from '../utils/errors'
-import * as detectEthereumProvider from '@metamask/detect-provider'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
 const MAX_GAS_LIMIT = 100000
@@ -235,7 +235,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
     if (network.chainId === toNetworkChainId) return
     try {
-      await window.ethereum.request?.({
+      await window.ethereum!.request?.({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: utils.hexlify(toNetworkChainId) }],
       })
