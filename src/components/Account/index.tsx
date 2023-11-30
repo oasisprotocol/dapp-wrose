@@ -1,5 +1,5 @@
 import classes from './index.module.css'
-import { FC } from 'react'
+import { FC, MouseEventHandler } from 'react'
 import { StringUtils } from '../../utils/string.utils'
 import { JazzIcon } from '../JazzIcon'
 import { useMediaQuery } from 'react-responsive'
@@ -22,10 +22,22 @@ export const Account: FC<Props> = ({ address, networkName }) => {
     }
   }
 
+  const handleCopyAddressToClipboard: MouseEventHandler<HTMLParagraphElement> = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    try {
+      await navigator.clipboard.writeText(address)
+      window.alert('Copied to clipboard!')
+    } catch (ex) {
+      // Ignore
+    }
+  }
+
   return (
     <div className={classes.account} onClick={handleAccountClick}>
       <JazzIcon size={isXlScreen ? 60 : 30} address={address} />
-      <p className={classes.accountDetails}>
+      <p onClick={handleCopyAddressToClipboard} className={classes.accountDetails}>
         <abbr title={address} className={classes.accountAddress}>
           {StringUtils.truncateAddress(address)}
         </abbr>

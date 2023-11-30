@@ -66,9 +66,9 @@ export const WrapForm: FC = () => {
 
     try {
       const amountBN = utils.parseUnits(value || '0', 'ether')
-      const txReceipt = await submit(amountBN)
+      const txHash = await submit(amountBN)
 
-      navigate(`/tx/${txReceipt.hash}?amount=${value}&action=${formType}`)
+      navigate(`/tx/${txHash}?amount=${value}&action=${formType}`)
     } catch (ex) {
       setError((ex as Error)?.message || JSON.stringify(ex))
     }

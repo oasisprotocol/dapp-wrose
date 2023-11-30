@@ -12,7 +12,7 @@
   margin-bottom: 1.625rem;
 }
 
-.importWRoseBtn.importWRoseBtn {
+.testTokensBtn.testTokensBtn {
   display: flex;
   justify-content: center;
   padding: 0.5rem;
@@ -29,7 +29,7 @@
     margin-bottom: 4.85rem;
   }
 
-  .importWRoseBtn.importWRoseBtn {
+  .testTokensBtn.testTokensBtn {
     justify-content: flex-end;
     margin-left: auto;
   }

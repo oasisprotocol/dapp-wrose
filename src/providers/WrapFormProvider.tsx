@@ -1,8 +1,7 @@
 import { createContext, FC, PropsWithChildren, useState } from 'react'
 import { BigNumber, BigNumberish, utils } from 'ethers'
-import { TransactionResponse } from '@ethersproject/abstract-provider'
-import { useWeb3 } from '../hooks/useWeb3'
 import { WrapFormType } from '../utils/types'
+import { useWeb3 } from '../hooks/useWeb3'
 
 interface WrapFormProviderState {
   isLoading: boolean
@@ -17,7 +16,7 @@ interface WrapFormProviderContext {
   init: () => void
   setAmount: (amount: BigNumberish) => void
   toggleFormType: (amount: BigNumber | null) => void
-  submit: (amount: BigNumber) => Promise<TransactionResponse>
+  submit: (amount: BigNumber) => Promise<string>
   getFeeAmount: () => BigNumber
 }
 
@@ -116,7 +115,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
 
     const { formType, balance, wRoseBalance } = state
 
-    let receipt: TransactionResponse | null = null
+    let txHash: string | null = null
 
     if (formType === WrapFormType.WRAP) {
       if (amount.gt(balance.sub(getFeeAmount()))) {
@@ -125,7 +124,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
       }
 
       try {
-        receipt = await wrap(amount.toString())
+        txHash = await wrap(amount.toString())
       } catch (ex) {
         _setIsLoading(false)
         throw ex
@@ -137,7 +136,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
       }
 
       try {
-        receipt = await unwrap(amount.toString())
+        txHash = await unwrap(amount.toString())
       } catch (ex) {
         _setIsLoading(false)
         throw ex
@@ -148,7 +147,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     }
 
     _setIsLoading(false)
-    return receipt
+    return txHash
   }
 
   const providerState: WrapFormProviderContext = {

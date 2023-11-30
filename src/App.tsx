@@ -6,6 +6,7 @@ import { Web3ContextProvider } from './providers/Web3Provider'
 import { ConnectWallet } from './pages/ConnectWallet'
 import { WrapFormContextProvider } from './providers/WrapFormProvider'
 import { Transaction } from './pages/Transaction'
+import { ConfigContextProvider } from './providers/ConfigProvider'
 
 const router = createHashRouter([
   {
@@ -33,7 +34,9 @@ const router = createHashRouter([
 ])
 
 export const App: FC = () => (
-  <Web3ContextProvider>
-    <RouterProvider router={router} />
-  </Web3ContextProvider>
+  <ConfigContextProvider>
+    <Web3ContextProvider>
+      <RouterProvider router={router} />
+    </Web3ContextProvider>
+  </ConfigContextProvider>
 )
