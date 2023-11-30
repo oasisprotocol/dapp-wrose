@@ -56,12 +56,7 @@ export const Transaction: FC = () => {
     init()
   }, [getTransaction, navigate, txHash])
 
-  const handleNavigateToExplorer = () => {
-    if (explorerBaseUrl && txHash) {
-      const txUrl = StringUtils.getTransactionUrl(explorerBaseUrl, txHash)
-      window.open(txUrl, '_blank', 'noopener,noreferrer')
-    }
-  }
+  const txUrl = explorerBaseUrl && txHash ? StringUtils.getTransactionUrl(explorerBaseUrl, txHash) : undefined
 
   const handleNavigateBack = () => {
     navigate('/wrapper')
@@ -92,11 +87,13 @@ export const Transaction: FC = () => {
             {type === TransactionType.Rose && <b>&nbsp;{amount} ROSE</b>}
           </h3>
 
-          {explorerBaseUrl && txHash && (
-            <Button className={classes.openInExplorerBtn} onClick={handleNavigateToExplorer} fullWidth>
-              View on explorer
-              <OpenInNewIcon />
-            </Button>
+          {txUrl && (
+            <a className={classes.noUnderlineLink} href={txUrl} target="_blank" rel="noopener noreferrer">
+              <Button className={classes.openInExplorerBtn} fullWidth>
+                View on explorer
+                <OpenInNewIcon />
+              </Button>
+            </a>
           )}
           <Button variant="secondary" onClick={handleNavigateBack} fullWidth>
             Close
