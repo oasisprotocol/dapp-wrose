@@ -16,14 +16,10 @@ export const Account: FC<Props> = ({ address, networkName }) => {
     state: { explorerBaseUrl },
   } = useWeb3()
 
-  const handleAccountClick = () => {
-    if (explorerBaseUrl) {
-      window.open(StringUtils.getAccountUrl(explorerBaseUrl, address), '_blank', 'noopener,noreferrer')
-    }
-  }
+  const url = explorerBaseUrl ? StringUtils.getAccountUrl(explorerBaseUrl, address) : '#'
 
   return (
-    <div className={classes.account} onClick={handleAccountClick}>
+    <a href={url} className={classes.account} target="_blank" rel="nofollow noreferrer">
       <JazzIcon size={isXlScreen ? 60 : 30} address={address} />
       <p className={classes.accountDetails}>
         <abbr title={address} className={classes.accountAddress}>
@@ -31,6 +27,6 @@ export const Account: FC<Props> = ({ address, networkName }) => {
         </abbr>
         <span className={classes.network}>{networkName}</span>
       </p>
-    </div>
+    </a>
   )
 }
