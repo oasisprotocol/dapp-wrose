@@ -51,10 +51,6 @@ export const ConnectWallet: FC = () => {
     }
   }
 
-  const handleInstallMetaMask = async () => {
-    window.open(METAMASK_HOME_PAGE, '_blank', 'noopener,noreferrer')
-  }
-
   return (
     <>
       {!hasMetaMaskWallet && (
@@ -65,14 +61,11 @@ export const ConnectWallet: FC = () => {
             MetaMask not detected, please install it.
           </p>
 
-          <Button
-            className={classes.installMetaMaskBtn}
-            onClick={handleInstallMetaMask}
-            fullWidth
-            disabled={isLoading}
-          >
-            Install MetaMask
-          </Button>
+          <a href={METAMASK_HOME_PAGE} target={'_blank'} rel={'noopener noreferrer'}>
+            <Button className={classes.installMetaMaskBtn} fullWidth disabled={isLoading}>
+              Install MetaMask
+            </Button>
+          </a>
           <Button
             variant="secondary"
             onClick={() => setHasMetaMaskWallet(true)}
