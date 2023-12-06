@@ -9,6 +9,7 @@
   border-radius: 12px;
   background: var(--white);
   padding: 0.7125rem;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -48,6 +49,7 @@
   .account {
     position: fixed;
     display: inline-flex;
+    text-decoration: none;
     width: auto;
     top: 2.875rem;
     right: 2.5rem;
