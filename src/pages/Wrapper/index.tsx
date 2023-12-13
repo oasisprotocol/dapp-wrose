@@ -38,10 +38,9 @@ export const Wrapper: FC = () => {
     addTokenToWallet,
   } = useWeb3()
   const {
-    state: { isLoading, balance, wRoseBalance, formType },
+    state: { isLoading, balance, wRoseBalance, formType, estimatedFee },
     init,
     setAmount,
-    getFeeAmount,
   } = useWrapForm()
 
   useEffect(() => {
@@ -52,10 +51,9 @@ export const Wrapper: FC = () => {
   const handlePercentageCalc = (percentage: BigNumber) => {
     if (formType === WrapFormType.WRAP) {
       if (percentage.eq(100)) {
-        /* In case of 100% WRAP, deduct hardcoded gas fee */
+        /* In case of 100% WRAP, deduct gas fee */
         const percAmount = NumberUtils.getPercentageAmount(balance, percentage)
-        const fee = getFeeAmount()
-        setAmount(percAmount.sub(fee))
+        setAmount(percAmount.sub(estimatedFee))
       } else {
         setAmount(NumberUtils.getPercentageAmount(balance, percentage))
       }
