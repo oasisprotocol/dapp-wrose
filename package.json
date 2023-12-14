@@ -16,6 +16,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource-variable/figtree": "^5.0.19",
+    "@fontsource-variable/roboto-mono": "^5.0.17",
     "@metamask/detect-provider": "^2.0.0",
     "@metamask/jazzicon": "^2.0.0",
     "@oasisprotocol/sapphire-paratime": "^1.1.4",
