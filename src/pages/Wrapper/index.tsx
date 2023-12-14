@@ -41,7 +41,7 @@ export const Wrapper: FC = () => {
     state: { isLoading, balance, wRoseBalance, formType },
     init,
     setAmount,
-    getFeeAmount,
+    paddedFeeReservation,
   } = useWrapForm()
 
   useEffect(() => {
@@ -54,8 +54,7 @@ export const Wrapper: FC = () => {
       if (percentage.eq(100)) {
         /* In case of 100% WRAP, deduct hardcoded gas fee */
         const percAmount = NumberUtils.getPercentageAmount(balance, percentage)
-        const fee = getFeeAmount()
-        setAmount(percAmount.sub(fee))
+        setAmount(percAmount.sub(paddedFeeReservation()))
       } else {
         setAmount(NumberUtils.getPercentageAmount(balance, percentage))
       }

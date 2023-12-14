@@ -33,10 +33,9 @@ const labelMapByFormType: Record<WrapFormType, WrapFormLabels> = {
 export const WrapForm: FC = () => {
   const navigate = useNavigate()
   const {
-    state: { formType, amount, isLoading, balance },
+    state: { formType, amount, isLoading },
     toggleFormType,
     submit,
-    getFeeAmount,
   } = useWrapForm()
   const { firstInputLabel, secondInputLabel, submitBtnLabel } = labelMapByFormType[formType]
   const [value, setValue] = useState('')
@@ -74,12 +73,6 @@ export const WrapForm: FC = () => {
     }
   }
 
-  const parsedValue = formType === WrapFormType.WRAP && value ? utils.parseUnits(value || '0', 'ether') : null
-  const showRoseMaxAmountWarning =
-    parsedValue && parsedValue.gt(0)
-      ? utils.parseUnits(value, 'ether').eq(balance.sub(getFeeAmount()))
-      : false
-
   return (
     <div>
       <form className={classes.wrapForm} onSubmit={handleFormSubmit}>
@@ -107,19 +100,10 @@ export const WrapForm: FC = () => {
           <ToggleButton className={classes.toggleBtn} onClick={handleToggleFormType} disabled={isLoading} />
         </div>
 
-        {/*This is hardcoded for now, as are gas prices*/}
-        <h4 className={classes.gasEstimateLabel}>Estimated fee: &lt;0.01 ROSE (~10 sec)</h4>
-
         <Button disabled={isLoading} type="submit" fullWidth>
           {submitBtnLabel}
         </Button>
         {error && <Alert variant="danger">{error}</Alert>}
-        {showRoseMaxAmountWarning && (
-          <Alert variant="warn">
-            You will not be able to pay for gas in subsequent transactions if you convert all your ROSE into
-            WROSE, are you sure?
-          </Alert>
-        )}
       </form>
     </div>
   )

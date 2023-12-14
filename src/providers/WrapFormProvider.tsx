@@ -18,7 +18,7 @@ interface WrapFormProviderContext {
   setAmount: (amount: BigNumberish) => void
   toggleFormType: (amount: BigNumber | null) => void
   submit: (amount: BigNumber) => Promise<TransactionResponse>
-  getFeeAmount: () => BigNumber
+  paddedFeeReservation: () => BigNumber
 }
 
 const wrapFormProviderInitialState: WrapFormProviderState = {
@@ -83,8 +83,9 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     }
   }
 
-  const getFeeAmount = () => {
-    return utils.parseUnits('0.01', 'ether')
+  const paddedFeeReservation = () => {
+    // Some multiple of fees, to reserve so user is able to create more transactions later (e.g. unwrap).
+    return utils.parseUnits('0.1', 'ether')
   }
 
   const toggleFormType = (amount: BigNumber | null) => {
@@ -95,7 +96,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     let maxAmount = amount
 
     if (toggledFormType === WrapFormType.WRAP && amount?.gt(balance)) {
-      maxAmount = balance.sub(getFeeAmount())
+      maxAmount = balance.sub(paddedFeeReservation())
     } else if (toggledFormType === WrapFormType.UNWRAP && amount?.gt(wRoseBalance)) {
       maxAmount = wRoseBalance
     }
@@ -119,7 +120,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     let receipt: TransactionResponse | null = null
 
     if (formType === WrapFormType.WRAP) {
-      if (amount.gt(balance.sub(getFeeAmount()))) {
+      if (amount.gt(balance.sub(paddedFeeReservation()))) {
         _setIsLoading(false)
         return Promise.reject(new Error('Insufficient balance'))
       }
@@ -154,7 +155,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
   const providerState: WrapFormProviderContext = {
     state,
     init,
-    getFeeAmount,
+    paddedFeeReservation,
     setAmount,
     toggleFormType,
     submit,
