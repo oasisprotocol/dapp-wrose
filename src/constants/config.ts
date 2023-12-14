@@ -17,6 +17,4 @@ export const NETWORKS: Record<number, NetworkConfiguration> = {
   },
 }
 
-export const MAX_GAS_LIMIT = 100000
-
 export const METAMASK_HOME_PAGE = 'https://metamask.io/'

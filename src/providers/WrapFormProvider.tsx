@@ -1,9 +1,8 @@
 import { createContext, FC, PropsWithChildren, useState } from 'react'
-import { BigNumber, BigNumberish } from 'ethers'
+import { BigNumber, BigNumberish, utils } from 'ethers'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { useWeb3 } from '../hooks/useWeb3'
 import { WrapFormType } from '../utils/types'
-import { MAX_GAS_LIMIT } from '../constants/config'
 
 interface WrapFormProviderState {
   isLoading: boolean
@@ -11,8 +10,6 @@ interface WrapFormProviderState {
   formType: WrapFormType
   balance: BigNumber
   wRoseBalance: BigNumber
-  estimatedFee: BigNumber
-  estimatedGasPrice: BigNumber
 }
 
 interface WrapFormProviderContext {
@@ -21,8 +18,7 @@ interface WrapFormProviderContext {
   setAmount: (amount: BigNumberish) => void
   toggleFormType: (amount: BigNumber | null) => void
   submit: (amount: BigNumber) => Promise<TransactionResponse>
-  setFeeAmount: () => Promise<void>
-  debounceLeadingSetFeeAmount: (fn?: () => Promise<void>, timeout?: number) => () => void
+  getFeeAmount: () => BigNumber
 }
 
 const wrapFormProviderInitialState: WrapFormProviderState = {
@@ -31,8 +27,6 @@ const wrapFormProviderInitialState: WrapFormProviderState = {
   formType: WrapFormType.UNWRAP,
   balance: BigNumber.from(0),
   wRoseBalance: BigNumber.from(0),
-  estimatedFee: BigNumber.from(0),
-  estimatedGasPrice: BigNumber.from(0),
 }
 
 export const WrapFormContext = createContext<WrapFormProviderContext>({} as WrapFormProviderContext)
@@ -44,7 +38,6 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     getBalanceOfWROSE,
     wrap,
     unwrap,
-    getGasPrice,
   } = useWeb3()
   const [state, setState] = useState<WrapFormProviderState>({
     ...wrapFormProviderInitialState,
@@ -90,47 +83,19 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     }
   }
 
-  const setFeeAmount = async () => {
-    const estimatedGasPrice = await getGasPrice()
-    const estimatedFee = estimatedGasPrice.mul(MAX_GAS_LIMIT)
-
-    setState(prevState => ({
-      ...prevState,
-      estimatedGasPrice,
-      estimatedFee,
-    }))
+  const getFeeAmount = () => {
+    return utils.parseUnits('0.01', 'ether')
   }
 
-  /**
-   * Prevent spamming of fee estimation calculations
-   * @param fn
-   * @param timeout
-   */
-  const debounceLeadingSetFeeAmount = (fn = setFeeAmount, timeout = 8000) => {
-    let id: ReturnType<typeof setTimeout> | null = null
-    return () => {
-      if (!id) {
-        fn()
-      }
-
-      if (id) {
-        clearTimeout(id)
-      }
-      id = setTimeout(() => {
-        id = null
-      }, timeout)
-    }
-  }
-
-  const toggleFormType = (amount: BigNumber | null): void => {
-    const { balance, wRoseBalance, formType, estimatedFee } = state
+  const toggleFormType = (amount: BigNumber | null) => {
+    const { balance, wRoseBalance, formType } = state
 
     const toggledFormType = formType === WrapFormType.WRAP ? WrapFormType.UNWRAP : WrapFormType.WRAP
 
     let maxAmount = amount
 
     if (toggledFormType === WrapFormType.WRAP && amount?.gt(balance)) {
-      maxAmount = balance.sub(estimatedFee)
+      maxAmount = balance.sub(getFeeAmount())
     } else if (toggledFormType === WrapFormType.UNWRAP && amount?.gt(wRoseBalance)) {
       maxAmount = wRoseBalance
     }
@@ -149,18 +114,18 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
 
     _setIsLoading(true)
 
-    const { formType, balance, wRoseBalance, estimatedFee, estimatedGasPrice } = state
+    const { formType, balance, wRoseBalance } = state
 
     let receipt: TransactionResponse | null = null
 
     if (formType === WrapFormType.WRAP) {
-      if (amount.gt(balance.sub(estimatedFee))) {
+      if (amount.gt(balance.sub(getFeeAmount()))) {
         _setIsLoading(false)
         return Promise.reject(new Error('Insufficient balance'))
       }
 
       try {
-        receipt = await wrap(amount.toString(), estimatedGasPrice)
+        receipt = await wrap(amount.toString())
       } catch (ex) {
         _setIsLoading(false)
         throw ex
@@ -172,7 +137,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
       }
 
       try {
-        receipt = await unwrap(amount.toString(), estimatedGasPrice)
+        receipt = await unwrap(amount.toString())
       } catch (ex) {
         _setIsLoading(false)
         throw ex
@@ -189,8 +154,7 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
   const providerState: WrapFormProviderContext = {
     state,
     init,
-    setFeeAmount,
-    debounceLeadingSetFeeAmount,
+    getFeeAmount,
     setAmount,
     toggleFormType,
     submit,

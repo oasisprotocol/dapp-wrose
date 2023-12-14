@@ -1,4 +1,4 @@
-import { FC, FormEvent, MouseEvent, useEffect, useRef, useState } from 'react'
+import { FC, FormEvent, MouseEvent, useEffect, useState } from 'react'
 import { Input } from '../Input'
 import classes from './index.module.css'
 import { Button } from '../Button'
@@ -8,8 +8,6 @@ import { useNavigate } from 'react-router-dom'
 import { ToggleButton } from '../ToggleButton'
 import { useWrapForm } from '../../hooks/useWrapForm'
 import { WrapFormType } from '../../utils/types'
-import { useInterval } from '../../hooks/useInterval'
-import { NumberUtils } from '../../utils/number.utils'
 
 const AMOUNT_PATTERN = '^[0-9]*[.,]?[0-9]*$'
 
@@ -35,25 +33,14 @@ const labelMapByFormType: Record<WrapFormType, WrapFormLabels> = {
 export const WrapForm: FC = () => {
   const navigate = useNavigate()
   const {
-    state: { formType, amount, isLoading, balance, estimatedFee },
+    state: { formType, amount, isLoading, balance },
     toggleFormType,
     submit,
-    debounceLeadingSetFeeAmount,
+    getFeeAmount,
   } = useWrapForm()
   const { firstInputLabel, secondInputLabel, submitBtnLabel } = labelMapByFormType[formType]
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
-  const debouncedSetFeeAmount = useRef(debounceLeadingSetFeeAmount())
-
-  useEffect(() => {
-    // Trigger fee calculation on value change
-    debouncedSetFeeAmount.current()
-  }, [value])
-
-  useInterval(() => {
-    // Trigger fee calculation every minute, in case fee data becomes stale
-    debouncedSetFeeAmount.current()
-  }, 60000)
 
   useEffect(() => {
     setError('')
@@ -89,10 +76,9 @@ export const WrapForm: FC = () => {
 
   const parsedValue = formType === WrapFormType.WRAP && value ? utils.parseUnits(value || '0', 'ether') : null
   const showRoseMaxAmountWarning =
-    parsedValue && parsedValue.gt(0) ? parsedValue.eq(balance.sub(estimatedFee)) : false
-
-  const estimatedFeeTruncated =
-    estimatedFee && estimatedFee.gt(0) ? `~${NumberUtils.getTruncatedAmount(estimatedFee)} ROSE` : '/'
+    parsedValue && parsedValue.gt(0)
+      ? utils.parseUnits(value, 'ether').eq(balance.sub(getFeeAmount()))
+      : false
 
   return (
     <div>
@@ -121,7 +107,8 @@ export const WrapForm: FC = () => {
           <ToggleButton className={classes.toggleBtn} onClick={handleToggleFormType} disabled={isLoading} />
         </div>
 
-        <h4 className={classes.gasEstimateLabel}>Estimated fee: {estimatedFeeTruncated}</h4>
+        {/*This is hardcoded for now, as are gas prices*/}
+        <h4 className={classes.gasEstimateLabel}>Estimated fee: &lt;0.01 ROSE (~10 sec)</h4>
 
         <Button disabled={isLoading} type="submit" fullWidth>
           {submitBtnLabel}

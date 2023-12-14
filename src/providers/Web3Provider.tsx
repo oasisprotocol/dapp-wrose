@@ -1,13 +1,16 @@
 import { createContext, FC, PropsWithChildren, useCallback, useState } from 'react'
 import { BigNumber, ethers, utils } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
-import { MAX_GAS_LIMIT, NETWORKS } from '../constants/config'
+import { NETWORKS } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23295/0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94/
 // https://repo.sourcify.dev/contracts/full_match/23294/0x8Bc2B030b299964eEfb5e1e0b36991352E56D2D3/
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { MetaMaskError, UnknownNetworkError } from '../utils/errors'
 import detectEthereumProvider from '@metamask/detect-provider'
+
+const MAX_GAS_PRICE = utils.parseUnits('100', 'gwei').toNumber()
+const MAX_GAS_LIMIT = 100000
 
 declare global {
   interface Window {
@@ -28,8 +31,8 @@ interface Web3ProviderState {
 
 interface Web3ProviderContext {
   readonly state: Web3ProviderState
-  wrap: (amount: string, gasPrice: BigNumber) => Promise<TransactionResponse>
-  unwrap: (amount: string, gasPrice: BigNumber) => Promise<TransactionResponse>
+  wrap: (amount: string) => Promise<TransactionResponse>
+  unwrap: (amount: string) => Promise<TransactionResponse>
   isMetaMaskInstalled: () => Promise<boolean>
   connectWallet: () => Promise<void>
   switchNetwork: () => Promise<void>
@@ -37,7 +40,6 @@ interface Web3ProviderContext {
   getBalanceOfWROSE: () => Promise<BigNumber>
   getTransaction: (txHash: string) => Promise<TransactionResponse>
   addTokenToWallet: () => Promise<void>
-  getGasPrice: () => Promise<BigNumber>
 }
 
 const web3ProviderInitialState: Web3ProviderState = {
@@ -250,18 +252,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }
 
-  const getGasPrice = async () => {
-    const { sapphireEthProvider } = state
-
-    if (!sapphireEthProvider) {
-      // Silently fail
-      return BigNumber.from(0)
-    }
-
-    return await sapphireEthProvider.getGasPrice()
-  }
-
-  const wrap = async (amount: string, gasPrice: BigNumber) => {
+  const wrap = async (amount: string) => {
     if (!amount) {
       throw new Error('[amount] is required!')
     }
@@ -272,10 +263,10 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       throw new Error('[wRoseContract] not initialized!')
     }
 
-    return await wRoseContract.deposit({ value: amount, gasLimit: MAX_GAS_LIMIT, gasPrice })
+    return await wRoseContract.deposit({ value: amount, gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
   }
 
-  const unwrap = async (amount: string, gasPrice: BigNumber) => {
+  const unwrap = async (amount: string) => {
     if (!amount) {
       throw new Error('[amount] is required!')
     }
@@ -286,7 +277,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       throw new Error('[wRoseContract] not initialized!')
     }
 
-    return await wRoseContract.withdraw(amount, { gasLimit: MAX_GAS_LIMIT, gasPrice })
+    return await wRoseContract.withdraw(amount, { gasLimit: MAX_GAS_LIMIT, gasPrice: MAX_GAS_PRICE })
   }
 
   const getTransaction = async (txHash: string) => {
@@ -340,7 +331,6 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     getBalanceOfWROSE,
     getTransaction,
     addTokenToWallet,
-    getGasPrice,
   }
 
   return <Web3Context.Provider value={providerState}>{children}</Web3Context.Provider>
