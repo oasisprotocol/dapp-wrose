@@ -1,28 +1,16 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import classes from './index.module.css'
 import { Button } from '../../components/Button'
 import { UnknownNetworkError } from '../../utils/errors'
 import { Alert } from '../../components/Alert'
-import { METAMASK_HOME_PAGE } from '../../constants/config'
-import { useWeb3 } from '../../hooks/useWeb3'
+import { useWalletConnect } from '../../hooks/useWalletConnect'
 
 export const ConnectWallet: FC = () => {
-  const { connectWallet, switchNetwork, isMetaMaskInstalled } = useWeb3()
+  const { connectWallet, switchNetwork } = useWalletConnect()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const [hasMetaMaskWallet, setHasMetaMaskWallet] = useState(true)
+  // TODO: Handle unknown network
   const [isUnknownNetwork, setIsUnknownNetwork] = useState(false)
-
-  useEffect(() => {
-    const init = async () => {
-      setIsLoading(true)
-      setHasMetaMaskWallet(await isMetaMaskInstalled())
-      setIsLoading(false)
-    }
-
-    init()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.ethereum])
 
   const handleConnectWallet = async () => {
     setIsLoading(true)
@@ -53,60 +41,33 @@ export const ConnectWallet: FC = () => {
 
   return (
     <>
-      {!hasMetaMaskWallet && (
+      {!isUnknownNetwork && (
         <div>
           <p className={classes.subHeader}>
             Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
             <br />
-            MetaMask not detected, please install it.
+            Please connect your wallet to get started.
           </p>
 
-          <a href={METAMASK_HOME_PAGE} target={'_blank'} rel={'noopener noreferrer'}>
-            <Button className={classes.installMetaMaskBtn} fullWidth disabled={isLoading}>
-              Install MetaMask
-            </Button>
-          </a>
-          <Button
-            variant="secondary"
-            onClick={() => setHasMetaMaskWallet(true)}
-            disabled={isLoading}
-            fullWidth
-          >
-            Skip
+          <Button onClick={handleConnectWallet} disabled={isLoading} fullWidth>
+            Connect wallet
           </Button>
+          {error && <Alert variant="danger">{error}</Alert>}
         </div>
       )}
-      {hasMetaMaskWallet && (
-        <>
-          {!isUnknownNetwork && (
-            <div>
-              <p className={classes.subHeader}>
-                Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-                <br />
-                Please connect your wallet to get started.
-              </p>
+      {isUnknownNetwork && (
+        <div>
+          <p className={classes.subHeader}>
+            Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
+            <br />
+            Please switch to another network to get started.
+          </p>
 
-              <Button onClick={handleConnectWallet} disabled={isLoading} fullWidth>
-                Connect wallet
-              </Button>
-              {error && <Alert variant="danger">{error}</Alert>}
-            </div>
-          )}
-          {isUnknownNetwork && (
-            <div>
-              <p className={classes.subHeader}>
-                Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
-                <br />
-                Please switch to another network to get started.
-              </p>
-
-              <Button onClick={handleSwitchNetwork} disabled={isLoading} fullWidth>
-                Switch Network
-              </Button>
-              {error && <Alert variant="danger">{error}</Alert>}
-            </div>
-          )}
-        </>
+          <Button onClick={handleSwitchNetwork} disabled={isLoading} fullWidth>
+            Switch Network
+          </Button>
+          {error && <Alert variant="danger">{error}</Alert>}
+        </div>
       )}
     </>
   )

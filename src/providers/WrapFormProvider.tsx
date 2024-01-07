@@ -5,6 +5,7 @@ import { useWeb3 } from '../hooks/useWeb3'
 import { WrapFormType } from '../utils/types'
 import { MAX_GAS_LIMIT } from '../constants/config'
 import { WrapFormProviderContext, WrapFormProviderState, WrapFormContext } from './WrapFormContext'
+import { useWalletConnect } from '../hooks/useWalletConnect'
 
 const wrapFormProviderInitialState: WrapFormProviderState = {
   isLoading: false,
@@ -19,12 +20,9 @@ const wrapFormProviderInitialState: WrapFormProviderState = {
 export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const {
     state: { isConnected },
-    getBalance,
-    getBalanceOfWROSE,
-    wrap,
-    unwrap,
-    getGasPrice,
-  } = useWeb3()
+  } = useWalletConnect()
+
+  const { getBalance, getBalanceOfWROSE, wrap, unwrap, getGasPrice } = useWeb3()
   const [state, setState] = useState<WrapFormProviderState>({
     ...wrapFormProviderInitialState,
   })
@@ -36,6 +34,17 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
     }))
   }
 
+  const setFeeAmount = async (): Promise<void> => {
+    const estimatedGasPrice = await getGasPrice()
+    const estimatedFee = estimatedGasPrice.mul(MAX_GAS_LIMIT)
+
+    setState(prevState => ({
+      ...prevState,
+      estimatedGasPrice,
+      estimatedFee,
+    }))
+  }
+
   const init = async () => {
     if (!isConnected) {
       return
@@ -43,12 +52,16 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
 
     _setIsLoading(true)
 
-    const [balance, wRoseBalance] = await Promise.all([getBalance(), getBalanceOfWROSE()])
+    const [balance, wRoseBalance]: [BigNumber, BigNumber, void] = await Promise.all([
+      getBalance(),
+      getBalanceOfWROSE(),
+      setFeeAmount(),
+    ])
 
     setState(prevState => ({
       ...prevState,
-      balance,
-      wRoseBalance,
+      balance: balance,
+      wRoseBalance: wRoseBalance,
       isLoading: false,
     }))
   }
@@ -67,17 +80,6 @@ export const WrapFormContextProvider: FC<PropsWithChildren> = ({ children }) => 
       // Ignore if invalid number
       console.error(ex)
     }
-  }
-
-  const setFeeAmount = async () => {
-    const estimatedGasPrice = await getGasPrice()
-    const estimatedFee = estimatedGasPrice.mul(MAX_GAS_LIMIT)
-
-    setState(prevState => ({
-      ...prevState,
-      estimatedGasPrice,
-      estimatedFee,
-    }))
   }
 
   /**

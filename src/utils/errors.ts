@@ -3,7 +3,3 @@ export class UnknownNetworkError extends Error {
     super(message)
   }
 }
-
-export interface MetaMaskError extends Error {
-  code: number
-}
