@@ -18,3 +18,10 @@ export const NETWORKS: Record<number, NetworkConfiguration> = {
 }
 
 export const METAMASK_HOME_PAGE = 'https://metamask.io/'
+
+export const WALLET_CONNECT_METADATA = {
+  name: 'ROSE (un)wrapper',
+  description: 'Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.Please connect your wallet to get started.',
+  url: 'http://wrose.oasis.io/',
+  icons: ['https://wrose.oasis.io/icon.svg']
+}
