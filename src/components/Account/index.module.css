@@ -9,8 +9,13 @@
   border-radius: 12px;
   background: var(--white);
   padding: 0.7125rem;
-  text-decoration: none;
   cursor: pointer;
+}
+
+.accountLink {
+  width: 100%;
+  display: flex;
+  text-decoration: none;
 }
 
 .accountDetails {

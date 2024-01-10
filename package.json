@@ -21,6 +21,7 @@
     "@metamask/detect-provider": "^2.0.0",
     "@metamask/jazzicon": "^2.0.0",
     "@oasisprotocol/sapphire-paratime": "^1.1.4",
+    "@web3modal/ethers5": "^3.5.5",
     "buffer": "^6.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

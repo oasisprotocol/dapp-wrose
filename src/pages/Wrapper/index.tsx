@@ -7,6 +7,7 @@ import { WrapForm } from '../../components/WrapForm'
 import { useWeb3 } from '../../hooks/useWeb3'
 import { useWrapForm } from '../../hooks/useWrapForm'
 import { WrapFormType } from '../../utils/types'
+import { useWalletConnect } from '../../hooks/useWalletConnect'
 
 interface PercentageEntry {
   value: BigNumber
@@ -34,9 +35,13 @@ const percentageList: PercentageEntry[] = [
 
 export const Wrapper: FC = () => {
   const {
-    state: { account },
+    state: { address },
+  } = useWalletConnect()
+  const {
+    state: { isInitialized },
     addTokenToWallet,
   } = useWeb3()
+
   const {
     state: { isLoading, balance, wRoseBalance, formType, estimatedFee },
     init,
@@ -44,9 +49,11 @@ export const Wrapper: FC = () => {
   } = useWrapForm()
 
   useEffect(() => {
-    init()
+    if (isInitialized) {
+      init()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account])
+  }, [isInitialized, address])
 
   const handlePercentageCalc = (percentage: BigNumber) => {
     if (formType === WrapFormType.WRAP) {
@@ -70,7 +77,7 @@ export const Wrapper: FC = () => {
         <p>Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.</p>
 
         <Button className={classes.importWRoseBtn} onClick={addTokenToWallet}>
-          Import WROSE to Wallet
+          Import WROSE to MetaMask Wallet
         </Button>
       </div>
 
