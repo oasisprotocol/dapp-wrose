@@ -96,10 +96,10 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const _removeEventListeners = (ethProvider = window.ethereum!) => {
-    ethProvider.off('accountsChanged', _accountsChanged)
-    ethProvider.off('chainChanged', _chainChanged)
-    ethProvider.off('connect', _connect)
-    ethProvider.off('disconnect', _disconnect)
+    ethProvider.off?.('accountsChanged', _accountsChanged)
+    ethProvider.off?.('chainChanged', _chainChanged)
+    ethProvider.off?.('connect', _connect)
+    ethProvider.off?.('disconnect', _disconnect)
   }
 
   const _init = async (account: string) => {
