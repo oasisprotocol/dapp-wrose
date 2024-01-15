@@ -1,4 +1,5 @@
-// @ts-check
+#!/usr/bin/env node
+
 const execSync = require('child_process').execSync
 const buildSha = require('child_process').execSync('git rev-parse HEAD').toString().trim()
 const buildDatetime = Date.now().toString()
