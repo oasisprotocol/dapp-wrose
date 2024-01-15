@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "node ./internals/scripts/build.js",
     "checkTs": "tsc --noEmit",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
