@@ -10,6 +10,7 @@ import { useWrapForm } from '../../hooks/useWrapForm'
 import { WrapFormType } from '../../utils/types'
 import { useInterval } from '../../hooks/useInterval'
 import { NumberUtils } from '../../utils/number.utils'
+import { WrapFeeWarningModal } from '../WrapFeeWarningModal'
 
 const AMOUNT_PATTERN = '^[0-9]*[.,]?[0-9]*$'
 
@@ -43,6 +44,7 @@ export const WrapForm: FC = () => {
   const { firstInputLabel, secondInputLabel, submitBtnLabel } = labelMapByFormType[formType]
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
+  const [isWrapFeeModalOpen, setIsWrapFeeModalOpen] = useState(true)
   const debouncedSetFeeAmount = useRef(debounceLeadingSetFeeAmount())
 
   useEffect(() => {
@@ -86,6 +88,8 @@ export const WrapForm: FC = () => {
       setError((ex as Error)?.message || JSON.stringify(ex))
     }
   }
+
+  const submitWrapFeeModal = () => {}
 
   const parsedValue = formType === WrapFormType.WRAP && value ? utils.parseUnits(value || '0', 'ether') : null
   const showRoseMaxAmountWarning =
@@ -134,6 +138,12 @@ export const WrapForm: FC = () => {
           </Alert>
         )}
       </form>
+      <WrapFeeWarningModal
+        isOpen={isWrapFeeModalOpen}
+        amount={'0.01'}
+        closeModal={() => setIsWrapFeeModalOpen(false)}
+        next={submitWrapFeeModal}
+      />
     </div>
   )
 }

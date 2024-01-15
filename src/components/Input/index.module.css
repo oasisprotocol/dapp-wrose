@@ -5,9 +5,15 @@
   justify-content: space-between;
   width: 100%;
   border-radius: 46px;
-  border: 1px solid var(--white);
-  background: var(--white);
   padding: 1.125rem 2.8125rem;
+}
+
+.inputGroupDisabled {
+  cursor: not-allowed;
+
+  * {
+    cursor: not-allowed;
+  }
 }
 
 .inputGroup > label {
@@ -38,6 +44,16 @@
 
 .inputGroup > input::placeholder {
   opacity: 0.75;
+}
+
+.inputGroupLight {
+  border: 1px solid var(--white);
+  background: var(--white);
+}
+
+.inputGroupDark {
+  border: 2px solid var(--gray-medium-dark);
+  background: var(--white);
 }
 
 @media screen and (min-width: 1000px) {

@@ -1,0 +1,39 @@
+.wrapFeeWarningModalContent {
+  display: flex;
+  flex-direction: column;
+
+  h4 {
+    color: var(--gray-extra-dark);
+  }
+
+  p {
+    color: var(--gray-extra-dark);
+
+    &:first-of-type {
+      margin-bottom: 1rem;
+    }
+
+    &:last-of-type {
+      margin-bottom: 3.125rem;
+    }
+  }
+}
+
+.wrapFeeWarningModalLogo {
+  align-self: center;
+  margin-bottom: 3.125rem;
+}
+
+.wrapFeeWarningModalButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 2.125rem;
+  margin: 2.5rem auto;
+  text-align: center;
+}
+
+.wrapFeeWarningModalFullAmount {
+  color: var(--danger);
+  text-decoration: underline;
+  cursor: pointer;
+}
