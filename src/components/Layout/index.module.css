@@ -1,4 +1,11 @@
 .layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.main {
   margin: 0 auto;
   width: 100%;
   padding: 6.875rem 1.875rem 1.875rem;
@@ -15,12 +22,29 @@
 }
 
 @media screen and (min-width: 1000px) {
-  .layout {
+  .main {
     max-width: 620px;
     padding: 4.625rem 0 0;
   }
 
   .header {
     margin-bottom: 2rem;
+  }
+}
+
+.buildInfo {
+  padding: 5rem 2rem 2rem;
+  color: #fff;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+
+  :is(a) {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
