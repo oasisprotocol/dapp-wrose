@@ -32,7 +32,8 @@
   }
 }
 
-.buildInfo {
+.footer {
+  display: flex;
   padding: 5rem 2rem 2rem;
   color: #fff;
   font-weight: 400;
@@ -47,4 +48,10 @@
       text-decoration: underline;
     }
   }
+}
+
+.buildInfo {
+  border-right: 1px solid #fff;
+  padding-right: 8px;
+  margin-right: 8px;
 }
