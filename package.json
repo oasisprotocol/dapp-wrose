@@ -6,8 +6,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "node ./internals/scripts/build.js",
     "checkTs": "tsc --noEmit",
+    "start": "vite",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint-docs": "markdownlint --ignore '**/node_modules/**' '**/*.md'",

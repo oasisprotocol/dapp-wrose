@@ -28,12 +28,43 @@ export const Layout: FC<PropsWithChildren> = () => {
   }, [isConnected, pathname, navigate])
 
   return (
-    <main className={classes.layout}>
-      {isConnected && account && <Account address={account} networkName={networkName ?? ''} />}
-      <h2 className={classes.header}>
-        ROSE <LogoIcon /> wrapper
-      </h2>
-      <Outlet />
-    </main>
+    <div className={classes.layout}>
+      <main className={classes.main}>
+        <div>
+          {isConnected && account && <Account address={account} networkName={networkName ?? ''} />}
+          <h2 className={classes.header}>
+            ROSE <LogoIcon /> wrapper
+          </h2>
+          <Outlet />
+        </div>
+      </main>
+      <footer className={classes.footer}>
+        {import.meta.env.VITE_REACT_APP_BUILD_VERSION && import.meta.env.VITE_REACT_APP_BUILD_DATETIME && (
+          <div className={classes.buildInfo}>
+            <div>
+              Version:{' '}
+              <a
+                href={`https://github.com/oasisprotocol/dapp-wrose/commit/${
+                  import.meta.env.VITE_REACT_APP_BUILD_VERSION
+                }`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {import.meta.env.VITE_REACT_APP_BUILD_VERSION.substring(0, 7)}
+              </a>{' '}
+              built at{' '}
+              {new Intl.DateTimeFormat(undefined, {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+              }).format(Number(import.meta.env.VITE_REACT_APP_BUILD_DATETIME))}
+            </div>
+          </div>
+        )}
+      </footer>
+    </div>
   )
 }
