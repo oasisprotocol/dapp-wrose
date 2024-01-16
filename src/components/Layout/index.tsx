@@ -5,6 +5,8 @@ import { Account } from '../Account'
 import { LogoIcon } from '../icons/LogoIcon'
 import { useWeb3 } from '../../hooks/useWeb3'
 
+const githubLink = 'https://github.com/oasisprotocol/dapp-wrose/'
+
 export const Layout: FC<PropsWithChildren> = () => {
   const {
     state: { isConnected, account, networkName },
@@ -39,14 +41,12 @@ export const Layout: FC<PropsWithChildren> = () => {
         </div>
       </main>
       <footer className={classes.footer}>
-        {import.meta.env.VITE_REACT_APP_BUILD_VERSION && import.meta.env.VITE_REACT_APP_BUILD_DATETIME && (
-          <div className={classes.buildInfo}>
-            <div>
+        <>
+          {import.meta.env.VITE_REACT_APP_BUILD_VERSION && import.meta.env.VITE_REACT_APP_BUILD_DATETIME && (
+            <div className={classes.buildInfo}>
               Version:{' '}
               <a
-                href={`https://github.com/oasisprotocol/dapp-wrose/commit/${
-                  import.meta.env.VITE_REACT_APP_BUILD_VERSION
-                }`}
+                href={`${githubLink}commit/${import.meta.env.VITE_REACT_APP_BUILD_VERSION}`}
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -62,8 +62,11 @@ export const Layout: FC<PropsWithChildren> = () => {
                 second: 'numeric',
               }).format(Number(import.meta.env.VITE_REACT_APP_BUILD_DATETIME))}
             </div>
-          </div>
-        )}
+          )}
+          <a href={githubLink} rel="noopener noreferrer" target="_blank">
+            GitHub
+          </a>
+        </>
       </footer>
     </div>
   )
