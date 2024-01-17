@@ -1,2 +1,0 @@
-declare const VITE_REACT_APP_BUILD_VERSION: string
-declare const VITE_REACT_APP_BUILD_DATETIME: string
