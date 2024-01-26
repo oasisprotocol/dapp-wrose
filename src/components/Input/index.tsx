@@ -17,6 +17,7 @@ interface Props<T> extends PropsWithChildren {
   id?: string
   disabled?: boolean
   inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'
+  className?: string
   value: T
   valueChange?: (value: T) => void
 }
@@ -30,6 +31,7 @@ export const Input = <T extends string | number | readonly string[]>({
   id,
   disabled,
   inputMode,
+  className,
   value,
   valueChange,
 }: Props<T>) => {
@@ -42,6 +44,7 @@ export const Input = <T extends string | number | readonly string[]>({
         classes.inputGroup,
         inputGroupVariantMap[variant],
         ...[disabled ? [classes.inputGroupDisabled] : []],
+        ...[className ? [className] : []],
       ].join(' ')}
     >
       <label htmlFor={inputId}>{label}</label>

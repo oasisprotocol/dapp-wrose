@@ -21,9 +21,13 @@ export abstract class NumberUtils {
     return parseInt(addr, 16)
   }
 
-  static shouldShowWrapFeeWarningModal({ fee, amount, accountBalanceAmount }: {
-    fee: BigNumber,
-    amount: BigNumber,
+  static shouldShowWrapFeeWarningModal({
+    fee,
+    amount,
+    accountBalanceAmount,
+  }: {
+    fee: BigNumber
+    amount: BigNumber
     accountBalanceAmount: BigNumber
   }) {
     const multiplierDeductionFee = fee.mul(WRAP_FEE_DEDUCTION_MULTIPLIER)
@@ -40,6 +44,14 @@ export abstract class NumberUtils {
     }
 
     // Account balance has NOT enough amount left for future transactions
-    return amount.add(multiplierDeductionFee).gt(accountBalanceAmount);
+    return amount.add(multiplierDeductionFee).gt(accountBalanceAmount)
+  }
+
+  static toBigNumber(amount: BigNumber | null): BigNumber {
+    if (!amount) {
+      return BigNumber.from(0)
+    }
+
+    return amount
   }
 }

@@ -24,12 +24,25 @@
   margin-bottom: 3.125rem;
 }
 
-.wrapFeeWarningModalButtons {
+.wrapFeeWarningModalInput {
+  width: 75%;
+  margin: 0 auto;
+}
+
+.wrapFeeWarningModalActions {
   display: flex;
   flex-direction: column;
   gap: 2.125rem;
   margin: 2.5rem auto;
   text-align: center;
+}
+
+.wrapFeeWarningModalButton {
+  min-width: 250px;
+}
+
+.wrapFeeWarningModalButtonText {
+  font-size: 13px;
 }
 
 .wrapFeeWarningModalFullAmount {

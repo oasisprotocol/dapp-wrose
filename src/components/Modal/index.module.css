@@ -20,7 +20,7 @@
 }
 
 .modalContent {
-  padding-top: 3.5rem;
+  padding: 3.5rem 3.5rem 0;
 }
 
 .modalCloseButton {
