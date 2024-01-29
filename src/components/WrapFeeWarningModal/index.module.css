@@ -50,3 +50,29 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+@media screen and (max-width: 1000px) {
+  .wrapFeeWarningModalContent {
+    p {
+      &:last-of-type {
+        margin-bottom: 2.625rem;
+      }
+    }
+  }
+
+  .wrapFeeWarningModalLogo {
+    margin-bottom: 2rem;
+  }
+
+  .wrapFeeWarningModalInput {
+    width: 100%;
+  }
+
+  .wrapFeeWarningModalActions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.625rem;
+    margin: 1.25rem auto;
+    text-align: center;
+  }
+}
