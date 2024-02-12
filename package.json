@@ -14,7 +14,8 @@
     "lint-docs": "markdownlint --ignore '**/node_modules/**' '**/*.md'",
     "lint-git": "node ./internals/scripts/gitlint.js",
     "prettify": "prettier src --write",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.0.19",
@@ -41,6 +42,7 @@
     "markdownlint-cli": "^0.37.0",
     "prettier": "3.1.0",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vitest": "^1.2.2"
   }
 }

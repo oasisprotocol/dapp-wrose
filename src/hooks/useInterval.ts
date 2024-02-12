@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 export const useInterval = (cb: () => void, delay: number) => {
-  const cbRef = useRef(() => {
-  })
+  const cbRef = useRef(() => {})
 
   useEffect(() => {
     cbRef.current = cb

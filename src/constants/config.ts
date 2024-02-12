@@ -20,3 +20,6 @@ export const NETWORKS: Record<number, NetworkConfiguration> = {
 export const MAX_GAS_LIMIT = 100000
 
 export const METAMASK_HOME_PAGE = 'https://metamask.io/'
+
+// Specifies multiplier when converting ROSE -> wROSE, so wallet has enough fees for future transactions
+export const WRAP_FEE_DEDUCTION_MULTIPLIER = 5

@@ -2,7 +2,7 @@ import { FC, FormEvent, MouseEvent, useEffect, useRef, useState } from 'react'
 import { Input } from '../Input'
 import classes from './index.module.css'
 import { Button } from '../Button'
-import { utils } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { Alert } from '../Alert'
 import { useNavigate } from 'react-router-dom'
 import { ToggleButton } from '../ToggleButton'
@@ -10,6 +10,7 @@ import { useWrapForm } from '../../hooks/useWrapForm'
 import { WrapFormType } from '../../utils/types'
 import { useInterval } from '../../hooks/useInterval'
 import { NumberUtils } from '../../utils/number.utils'
+import { WrapFeeWarningModal } from '../WrapFeeWarningModal'
 
 const AMOUNT_PATTERN = '^[0-9]*[.,]?[0-9]*$'
 
@@ -43,6 +44,7 @@ export const WrapForm: FC = () => {
   const { firstInputLabel, secondInputLabel, submitBtnLabel } = labelMapByFormType[formType]
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
+  const [isWrapFeeModalOpen, setIsWrapFeeModalOpen] = useState(false)
   const debouncedSetFeeAmount = useRef(debounceLeadingSetFeeAmount())
 
   useEffect(() => {
@@ -73,13 +75,9 @@ export const WrapForm: FC = () => {
     toggleFormType(value ? utils.parseUnits(value, 'ether') : null)
   }
 
-  const handleFormSubmit = async (e: FormEvent) => {
-    setError('')
-    e.preventDefault()
-
+  const submitTransaction = async (amount: BigNumber) => {
     try {
-      const amountBN = utils.parseUnits(value || '0', 'ether')
-      const txReceipt = await submit(amountBN)
+      const txReceipt = await submit(amount)
 
       navigate(`/tx/${txReceipt.hash}?amount=${value}&action=${formType}`)
     } catch (ex) {
@@ -87,9 +85,30 @@ export const WrapForm: FC = () => {
     }
   }
 
-  const parsedValue = formType === WrapFormType.WRAP && value ? utils.parseUnits(value || '0', 'ether') : null
-  const showRoseMaxAmountWarning =
-    parsedValue && parsedValue.gt(0) ? parsedValue.eq(balance.sub(estimatedFee)) : false
+  const handleFormSubmit = async (e: FormEvent) => {
+    setError('')
+    e.preventDefault()
+
+    const amount = utils.parseUnits(value || '0', 'ether')
+
+    if (
+      formType === WrapFormType.WRAP &&
+      NumberUtils.shouldShowWrapFeeWarningModal({
+        fee: estimatedFee,
+        amount,
+        accountBalanceAmount: balance,
+      })
+    ) {
+      setIsWrapFeeModalOpen(true)
+    } else {
+      submitTransaction(amount)
+    }
+  }
+
+  const submitWrapFeeModal = (amount: BigNumber) => {
+    submitTransaction(amount)
+    setIsWrapFeeModalOpen(false)
+  }
 
   const estimatedFeeTruncated =
     estimatedFee && estimatedFee.gt(0) ? `~${NumberUtils.getTruncatedAmount(estimatedFee)} ROSE` : '/'
@@ -127,13 +146,12 @@ export const WrapForm: FC = () => {
           {submitBtnLabel}
         </Button>
         {error && <Alert variant="danger">{error}</Alert>}
-        {showRoseMaxAmountWarning && (
-          <Alert variant="warn">
-            You will not be able to pay for gas in subsequent transactions if you convert all your ROSE into
-            WROSE, are you sure?
-          </Alert>
-        )}
       </form>
+      <WrapFeeWarningModal
+        isOpen={isWrapFeeModalOpen}
+        closeModal={() => setIsWrapFeeModalOpen(false)}
+        next={submitWrapFeeModal}
+      />
     </div>
   )
 }
