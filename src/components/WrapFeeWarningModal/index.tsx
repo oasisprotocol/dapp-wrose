@@ -59,9 +59,9 @@ export const WrapFeeWarningModal: FC<WrapFeeWarningModalProps> = ({ isOpen, clos
             <span className={classes.wrapFeeWarningModalButtonText}>Wrap reduced amount</span>
           </Button>
 
-          <a className={classes.wrapFeeWarningModalFullAmount} href={void 0} onClick={() => next(amount!)}>
+          <button className={classes.wrapFeeWarningModalFullAmount} onClick={() => next(amount!)}>
             Continue with full amount
-          </a>
+          </button>
         </div>
       </div>
     </Modal>
