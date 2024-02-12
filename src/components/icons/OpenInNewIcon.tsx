@@ -1,3 +1,7 @@
+/**
+ * Copyright 2024 https://github.com/material-icons/material-icons
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { FC } from 'react'
 
 export const OpenInNewIcon: FC = () => (
