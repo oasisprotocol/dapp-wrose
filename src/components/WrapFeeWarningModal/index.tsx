@@ -19,7 +19,7 @@ export const WrapFeeWarningModal: FC<WrapFeeWarningModalProps> = ({ isOpen, clos
   } = useWrapForm()
   const estimatedFeeDeduction = estimatedFee.mul(WRAP_FEE_DEDUCTION_MULTIPLIER)
 
-  const roseAmount = NumberUtils.toBigNumber(amount)
+  const roseAmount = NumberUtils.ensureNonNullBigNumber(amount)
   const estimatedAmountWithDeductedFees = roseAmount!.sub(estimatedFeeDeduction)
 
   return (

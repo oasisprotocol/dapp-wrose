@@ -47,7 +47,7 @@ export abstract class NumberUtils {
     return amount.add(multiplierDeductionFee).gt(accountBalanceAmount)
   }
 
-  static toBigNumber(amount: BigNumber | null): BigNumber {
+  static ensureNonNullBigNumber(amount: BigNumber | null): BigNumber {
     if (!amount) {
       return BigNumber.from(0)
     }
