@@ -7,16 +7,16 @@ import { METAMASK_HOME_PAGE } from '../../constants/config'
 import { useWeb3 } from '../../hooks/useWeb3'
 
 export const ConnectWallet: FC = () => {
-  const { connectWallet, switchNetwork, isMetaMaskInstalled } = useWeb3()
+  const { connectWallet, switchNetwork, isProviderAvailable } = useWeb3()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const [hasMetaMaskWallet, setHasMetaMaskWallet] = useState(true)
+  const [providerAvailable, setProviderAvailable] = useState(true)
   const [isUnknownNetwork, setIsUnknownNetwork] = useState(false)
 
   useEffect(() => {
     const init = async () => {
       setIsLoading(true)
-      setHasMetaMaskWallet(await isMetaMaskInstalled())
+      setProviderAvailable(await isProviderAvailable())
       setIsLoading(false)
     }
 
@@ -53,7 +53,7 @@ export const ConnectWallet: FC = () => {
 
   return (
     <>
-      {!hasMetaMaskWallet && (
+      {!providerAvailable && (
         <div>
           <p className={classes.subHeader}>
             Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
@@ -68,7 +68,7 @@ export const ConnectWallet: FC = () => {
           </a>
           <Button
             variant="secondary"
-            onClick={() => setHasMetaMaskWallet(true)}
+            onClick={() => setProviderAvailable(true)}
             disabled={isLoading}
             fullWidth
           >
@@ -76,7 +76,7 @@ export const ConnectWallet: FC = () => {
           </Button>
         </div>
       )}
-      {hasMetaMaskWallet && (
+      {providerAvailable && (
         <>
           {!isUnknownNetwork && (
             <div>
