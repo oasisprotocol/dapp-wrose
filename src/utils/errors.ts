@@ -4,6 +4,6 @@ export class UnknownNetworkError extends Error {
   }
 }
 
-export interface MetaMaskError extends Error {
+export interface EIP1193Error extends Error {
   code: number
 }

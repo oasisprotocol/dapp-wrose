@@ -7,6 +7,8 @@ import { ConnectWallet } from './pages/ConnectWallet'
 import { WrapFormContextProvider } from './providers/WrapFormProvider'
 import { Transaction } from './pages/Transaction'
 import { EIP1193ContextProvider } from './providers/EIP1193Provider.tsx'
+import { EIP6963ManagerContextProvider } from './providers/EIP6963ManagerProvider.tsx'
+import { EIP6963ContextProvider } from './providers/EIP6963Provider.tsx'
 
 const router = createHashRouter([
   {
@@ -34,9 +36,13 @@ const router = createHashRouter([
 ])
 
 export const App: FC = () => (
-  <EIP1193ContextProvider>
-    <Web3ContextProvider>
-      <RouterProvider router={router} />
-    </Web3ContextProvider>
-  </EIP1193ContextProvider>
+  <EIP6963ManagerContextProvider>
+    <EIP1193ContextProvider>
+      <EIP6963ContextProvider>
+        <Web3ContextProvider>
+          <RouterProvider router={router} />
+        </Web3ContextProvider>
+      </EIP6963ContextProvider>
+    </EIP1193ContextProvider>
+  </EIP6963ManagerContextProvider>
 )

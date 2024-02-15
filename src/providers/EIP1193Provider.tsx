@@ -1,13 +1,14 @@
 import { FC, PropsWithChildren } from 'react'
 import { ethers, utils } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
-import { MetaMaskError } from '../utils/errors'
+import { EIP1193Error } from '../utils/errors'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { EIP1193Context, EIP1193ProviderContext } from './EIP1193Context.ts'
+import { EIP1193Provider } from '../utils/types.ts'
 
 declare global {
   interface Window {
-    ethereum?: ethers.providers.ExternalProvider & ethers.providers.Web3Provider
+    ethereum?: EIP1193Provider
   }
 }
 
@@ -18,11 +19,11 @@ export const EIP1193ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       mustBeMetaMask: false,
     })
 
-    return !!window.ethereum && provider === window.ethereum
+    return !!provider
   }
 
-  const connectWallet = async (): Promise<string> => {
-    const accounts: string[] = await (window.ethereum?.request?.({ method: 'eth_requestAccounts' }) ||
+  const connectWallet = async (provider = window.ethereum): Promise<string> => {
+    const accounts: string[] = await (provider?.request?.({ method: 'eth_requestAccounts' }) ||
       Promise.resolve([]))
 
     if (!accounts || accounts?.length <= 0) {
@@ -32,10 +33,10 @@ export const EIP1193ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return accounts[0]
   }
 
-  const _addNetwork = (chainId: number) => {
+  const _addNetwork = (chainId: number, provider = window.ethereum) => {
     if (chainId === 0x5afe) {
       // Default to Sapphire Mainnet
-      return window.ethereum?.request?.({
+      return provider?.request?.({
         method: 'wallet_addEthereumChain',
         params: [
           {
@@ -56,8 +57,8 @@ export const EIP1193ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     throw new Error('Unable to automatically add the network, please do it manually!')
   }
 
-  const switchNetwork = async (chainId = 0x5afe) => {
-    const ethProvider = new ethers.providers.Web3Provider(window.ethereum!)
+  const switchNetwork = async (chainId = 0x5afe, provider = window.ethereum) => {
+    const ethProvider = new ethers.providers.Web3Provider(provider!)
     const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
       sapphire.SapphireAnnex
 
@@ -65,28 +66,28 @@ export const EIP1193ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
     if (network.chainId === chainId) return
     try {
-      await window.ethereum!.request?.({
+      await provider!.request?.({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: utils.hexlify(chainId) }],
       })
     } catch (e) {
-      const metaMaskError = e as MetaMaskError
-      // Metamask desktop - Throws e.code 4902 when chain is not available
-      // Metamask mobile - Throws generic -32603 (https://github.com/MetaMask/metamask-mobile/issues/3312)
+      const error = e as EIP1193Error
+      // EIP1193 desktop - Throws e.code 4902 when chain is not available
+      // Metamask mobile(edge case) - Throws generic -32603 (https://github.com/MetaMask/metamask-mobile/issues/3312)
 
-      if (metaMaskError?.code !== 4902 && metaMaskError?.code !== -32603) {
-        throw metaMaskError
+      if (error?.code !== 4902 && error?.code !== -32603) {
+        throw error
       } else {
         _addNetwork(chainId)
       }
     }
   }
 
-  const addTokenToWallet = async (wRoseContractAddress: string) => {
+  const addTokenToWallet = async (wRoseContractAddress: string, provider = window.ethereum) => {
     const symbol = 'WROSE'
 
     try {
-      await window.ethereum?.request?.({
+      await provider?.request?.({
         method: 'wallet_watchAsset',
         params: {
           type: 'ERC20',
