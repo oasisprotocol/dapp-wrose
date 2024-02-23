@@ -24,10 +24,18 @@ export const EIP6963ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   })
 
   useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      isEIP6963ProviderAvailable: !!providerList.length,
-    }))
+    const { isEIP6963ProviderAvailable } = state
+
+    const isEIP6963ProviderAvailableNext = !!providerList.length
+
+    if (isEIP6963ProviderAvailable !== isEIP6963ProviderAvailableNext) {
+      setState(prevState => ({
+        ...prevState,
+        isEIP6963ProviderAvailable: isEIP6963ProviderAvailableNext,
+      }))
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providerList])
 
   const isEIP6963ProviderAvailableSync = () => {
@@ -52,12 +60,26 @@ export const EIP6963ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return addTokenToWalletEIP1193(wRoseContractAddress, provider)
   }
 
+  const setCurrentProviderByRdns = (rdns: string) => {
+    const { provider } = state
+
+    provider.setCurrentProvider(rdns)
+  }
+
+  const getCurrentProvider = () => {
+    const { provider } = state
+
+    return provider.currentProviderDetail?.provider
+  }
+
   const providerState: EIP6963ProviderContext = {
     state,
     isEIP6963ProviderAvailableSync,
     connectWallet,
     switchNetwork,
     addTokenToWallet,
+    setCurrentProviderByRdns,
+    getCurrentProvider,
   }
 
   return <EIP6963Context.Provider value={providerState}>{children}</EIP6963Context.Provider>
