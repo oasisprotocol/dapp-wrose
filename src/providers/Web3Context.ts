@@ -24,7 +24,7 @@ export interface Web3ProviderContext {
   readonly state: Web3ProviderState
   wrap: (amount: string, gasPrice: BigNumber) => Promise<TransactionResponse>
   unwrap: (amount: string, gasPrice: BigNumber) => Promise<TransactionResponse>
-  connectWallet: () => Promise<void>
+  connectWallet: (providerType?: ProviderType) => Promise<void>
   switchNetwork: (chainId?: number) => Promise<void>
   getBalance: () => Promise<BigNumber>
   getBalanceOfWROSE: () => Promise<BigNumber>

@@ -8,6 +8,7 @@ import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
 import { UnknownNetworkError } from '../utils/errors'
 import { ProviderType, Web3Context, Web3ProviderContext, Web3ProviderState } from './Web3Context'
 import { useEIP1193 } from '../hooks/useEIP1193.ts'
+import { useEIP6963 } from '../hooks/useEIP6963.ts'
 
 const web3ProviderInitialState: Web3ProviderState = {
   isConnected: false,
@@ -18,7 +19,7 @@ const web3ProviderInitialState: Web3ProviderState = {
   account: null,
   explorerBaseUrl: null,
   networkName: null,
-  providerType: ProviderType.EIP1193,
+  providerType: ProviderType.EIP6963,
 }
 
 export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -28,6 +29,13 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     switchNetwork: switchNetworkEIP1193,
     addTokenToWallet: addTokenToWalletEIP1193,
   } = useEIP1193()
+  const {
+    isEIP6963ProviderAvailableSync,
+    connectWallet: connectWalletEIP6963,
+    switchNetwork: switchNetworkEIP6963,
+    addTokenToWallet: addTokenToWalletEIP6963,
+    getCurrentProvider: getEIP6963CurrentProvider,
+  } = useEIP6963()
 
   const [state, setState] = useState<Web3ProviderState>({
     ...web3ProviderInitialState,
@@ -157,40 +165,48 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const isProviderAvailable = async () => {
-    const { providerType } = state
-
-    switch (providerType) {
-      case ProviderType.EIP1193:
-        return isEIP1193ProviderAvailable()
-      default:
-        return false
-    }
+    return (await isEIP1193ProviderAvailable()) || isEIP6963ProviderAvailableSync()
   }
 
-  const _getConnectedAccount = () => {
-    const { providerType } = state
-
+  const _getConnectedAccount = (providerType?: ProviderType) => {
     switch (providerType) {
       case ProviderType.EIP1193:
         return connectWalletEIP1193()
       default:
-        return
+        return connectWalletEIP6963()
     }
   }
 
-  const connectWallet = async () => {
-    const { providerType } = state
-    const account = await _getConnectedAccount()
+  const connectWallet = async (providerType?: ProviderType) => {
+    const { providerType: globalProviderType } = state
+    const currentProviderType = providerType ?? globalProviderType
+
+    const account = await _getConnectedAccount(currentProviderType)
 
     if (!account) {
       throw new Error('[Web3Context] Request account failed!')
     }
 
-    switch (providerType) {
+    switch (currentProviderType) {
       case ProviderType.EIP1193: {
         await _init(account, window.ethereum)
         _addEventListenersOnce(window.ethereum)
+
+        break
       }
+      default: {
+        const provider = getEIP6963CurrentProvider()
+
+        await _init(account, provider)
+        _addEventListenersOnce(provider)
+      }
+    }
+
+    if (currentProviderType !== globalProviderType) {
+      setState(prevState => ({
+        ...prevState,
+        providerType: currentProviderType,
+      }))
     }
   }
 
@@ -201,7 +217,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       case ProviderType.EIP1193:
         return switchNetworkEIP1193(chainId)
       default:
-        return
+        return switchNetworkEIP6963(chainId)
     }
   }
 
@@ -271,6 +287,8 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     switch (providerType) {
       case ProviderType.EIP1193:
         return addTokenToWalletEIP1193(wRoseContractAddress)
+      default:
+        return addTokenToWalletEIP6963(wRoseContractAddress)
     }
   }
 
