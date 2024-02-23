@@ -5,29 +5,64 @@ import { UnknownNetworkError } from '../../utils/errors'
 import { Alert } from '../../components/Alert'
 import { METAMASK_HOME_PAGE } from '../../constants/config'
 import { useWeb3 } from '../../hooks/useWeb3'
+import { WalletModal } from '../../components/WalletModal'
+import { ProviderType } from '../../providers/Web3Context.ts'
+import { useEIP6963 } from '../../hooks/useEIP6963.ts'
+import { useEIP1193 } from '../../hooks/useEIP1193.ts'
 
 export const ConnectWallet: FC = () => {
-  const { connectWallet, switchNetwork, isMetaMaskInstalled } = useWeb3()
+  const {
+    state: { isEIP6963ProviderAvailable },
+  } = useEIP6963()
+  const { isEIP1193ProviderAvailable } = useEIP1193()
+  const {
+    state: { providerType },
+    connectWallet,
+    switchNetwork,
+    isProviderAvailable,
+  } = useWeb3()
   const [isLoading, setIsLoading] = useState(false)
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
   const [error, setError] = useState('')
-  const [hasMetaMaskWallet, setHasMetaMaskWallet] = useState(true)
+  const [providerAvailable, setProviderAvailable] = useState(true)
   const [isUnknownNetwork, setIsUnknownNetwork] = useState(false)
 
   useEffect(() => {
     const init = async () => {
       setIsLoading(true)
-      setHasMetaMaskWallet(await isMetaMaskInstalled())
+      setProviderAvailable(await isProviderAvailable())
       setIsLoading(false)
     }
 
     init()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.ethereum])
+  }, [])
 
-  const handleConnectWallet = async () => {
+  useEffect(() => {
+    const setAvailable = async () => {
+      setProviderAvailable((await isEIP1193ProviderAvailable()) || isEIP6963ProviderAvailable)
+    }
+
+    setAvailable()
+  }, [isEIP1193ProviderAvailable, isEIP6963ProviderAvailable])
+
+  const handleProviderConnectionType = () => {
+    // This is async version of EIP-6963
+    if (isEIP6963ProviderAvailable) {
+      setIsWalletModalOpen(true)
+
+      return
+    }
+
+    handleConnectWallet(ProviderType.EIP1193)
+  }
+
+  const handleConnectWallet = async (walletProviderType: ProviderType = providerType) => {
+    setIsWalletModalOpen(false)
+
     setIsLoading(true)
     try {
-      await connectWallet()
+      await connectWallet(walletProviderType)
     } catch (ex) {
       if (ex instanceof UnknownNetworkError) {
         setIsUnknownNetwork(true)
@@ -53,7 +88,7 @@ export const ConnectWallet: FC = () => {
 
   return (
     <>
-      {!hasMetaMaskWallet && (
+      {!providerAvailable && (
         <div>
           <p className={classes.subHeader}>
             Quickly wrap your ROSE into wROSE and vice versa with the (un)wrap ROSE tool.
@@ -68,7 +103,7 @@ export const ConnectWallet: FC = () => {
           </a>
           <Button
             variant="secondary"
-            onClick={() => setHasMetaMaskWallet(true)}
+            onClick={() => setProviderAvailable(true)}
             disabled={isLoading}
             fullWidth
           >
@@ -76,7 +111,7 @@ export const ConnectWallet: FC = () => {
           </Button>
         </div>
       )}
-      {hasMetaMaskWallet && (
+      {providerAvailable && (
         <>
           {!isUnknownNetwork && (
             <div>
@@ -86,7 +121,7 @@ export const ConnectWallet: FC = () => {
                 Please connect your wallet to get started.
               </p>
 
-              <Button onClick={handleConnectWallet} disabled={isLoading} fullWidth>
+              <Button onClick={handleProviderConnectionType} disabled={isLoading} fullWidth>
                 Connect wallet
               </Button>
               {error && <Alert variant="danger">{error}</Alert>}
@@ -108,6 +143,11 @@ export const ConnectWallet: FC = () => {
           )}
         </>
       )}
+      <WalletModal
+        isOpen={isWalletModalOpen}
+        closeModal={() => setIsWalletModalOpen(false)}
+        next={() => handleConnectWallet(ProviderType.EIP6963)}
+      />
     </>
   )
 }

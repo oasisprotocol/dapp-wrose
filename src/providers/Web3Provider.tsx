@@ -1,19 +1,14 @@
 import { FC, PropsWithChildren, useCallback, useState } from 'react'
-import { BigNumber, ethers, utils } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { MAX_GAS_LIMIT, NETWORKS } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23295/0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94/
 // https://repo.sourcify.dev/contracts/full_match/23294/0x8Bc2B030b299964eEfb5e1e0b36991352E56D2D3/
 import WrappedRoseMetadata from '../contracts/WrappedROSE.json'
-import { MetaMaskError, UnknownNetworkError } from '../utils/errors'
-import detectEthereumProvider from '@metamask/detect-provider'
-import { Web3ProviderContext, Web3ProviderState, Web3Context } from './Web3Context'
-
-declare global {
-  interface Window {
-    ethereum?: ethers.providers.ExternalProvider & ethers.providers.Web3Provider
-  }
-}
+import { UnknownNetworkError } from '../utils/errors'
+import { ProviderType, Web3Context, Web3ProviderContext, Web3ProviderState } from './Web3Context'
+import { useEIP1193 } from '../hooks/useEIP1193.ts'
+import { useEIP6963 } from '../hooks/useEIP6963.ts'
 
 const web3ProviderInitialState: Web3ProviderState = {
   isConnected: false,
@@ -24,9 +19,24 @@ const web3ProviderInitialState: Web3ProviderState = {
   account: null,
   explorerBaseUrl: null,
   networkName: null,
+  providerType: ProviderType.EIP6963,
 }
 
 export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
+  const {
+    isEIP1193ProviderAvailable,
+    connectWallet: connectWalletEIP1193,
+    switchNetwork: switchNetworkEIP1193,
+    addTokenToWallet: addTokenToWalletEIP1193,
+  } = useEIP1193()
+  const {
+    isEIP6963ProviderAvailableSync,
+    connectWallet: connectWalletEIP6963,
+    switchNetwork: switchNetworkEIP6963,
+    addTokenToWallet: addTokenToWalletEIP6963,
+    getCurrentProvider: getEIP6963CurrentProvider,
+  } = useEIP6963()
+
   const [state, setState] = useState<Web3ProviderState>({
     ...web3ProviderInitialState,
   })
@@ -88,32 +98,30 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const _connect = useCallback(() => _connectionChanged(true), [])
   const _disconnect = useCallback(() => _connectionChanged(false), [])
 
-  const _addEventListeners = (ethProvider = window.ethereum!) => {
-    ethProvider.on('accountsChanged', _accountsChanged)
-    ethProvider.on('chainChanged', _chainChanged)
-    ethProvider.on('connect', _connect)
-    ethProvider.on('disconnect', _disconnect)
-  }
+  const _addEventListenersOnce = (() => {
+    let eventListenersInitialized = false
+    return (ethProvider: typeof window.ethereum) => {
+      if (eventListenersInitialized) {
+        return
+      }
 
-  const _removeEventListeners = (ethProvider = window.ethereum!) => {
-    ethProvider.off('accountsChanged', _accountsChanged)
-    ethProvider.off('chainChanged', _chainChanged)
-    ethProvider.off('connect', _connect)
-    ethProvider.off('disconnect', _disconnect)
-  }
+      ethProvider?.on?.('accountsChanged', _accountsChanged)
+      ethProvider?.on?.('chainChanged', _chainChanged)
+      ethProvider?.on?.('connect', _connect)
+      ethProvider?.on?.('disconnect', _disconnect)
 
-  const _init = async (account: string) => {
-    _removeEventListeners()
+      eventListenersInitialized = true
+    }
+  })()
 
+  const _init = async (account: string, provider: typeof window.ethereum) => {
     try {
-      const ethProvider = new ethers.providers.Web3Provider(window.ethereum!)
+      const ethProvider = new ethers.providers.Web3Provider(provider!)
       const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
         sapphire.SapphireAnnex
 
       const network = await sapphireEthProvider.getNetwork()
       _setNetworkSpecificVars(network.chainId, sapphireEthProvider)
-
-      _addEventListeners()
 
       setState(prevState => ({
         ...prevState,
@@ -156,70 +164,60 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
     return await wRoseContract.balanceOf(account)
   }
 
-  const isMetaMaskInstalled = async () => {
-    const provider = await detectEthereumProvider()
-
-    return !!window.ethereum && provider === window.ethereum
+  const isProviderAvailable = async () => {
+    return (await isEIP1193ProviderAvailable()) || isEIP6963ProviderAvailableSync()
   }
 
-  const connectWallet = async () => {
-    const accounts: string[] = await (window.ethereum?.request?.({ method: 'eth_requestAccounts' }) ||
-      Promise.resolve([]))
+  const _getConnectedAccount = (providerType?: ProviderType) => {
+    switch (providerType) {
+      case ProviderType.EIP1193:
+        return connectWalletEIP1193()
+      default:
+        return connectWalletEIP6963()
+    }
+  }
 
-    if (!accounts || accounts?.length <= 0) {
+  const connectWallet = async (providerType?: ProviderType) => {
+    const { providerType: globalProviderType } = state
+    const currentProviderType = providerType ?? globalProviderType
+
+    const account = await _getConnectedAccount(currentProviderType)
+
+    if (!account) {
       throw new Error('[Web3Context] Request account failed!')
     }
 
-    await _init(accounts[0])
-  }
+    switch (currentProviderType) {
+      case ProviderType.EIP1193: {
+        await _init(account, window.ethereum)
+        _addEventListenersOnce(window.ethereum)
 
-  const _addNetwork = async (chainId: number) => {
-    if (chainId === 0x5afe) {
-      // Default to Sapphire Mainnet
-      return await window.ethereum?.request?.({
-        method: 'wallet_addEthereumChain',
-        params: [
-          {
-            chainId: '0x5afe',
-            chainName: 'Oasis Sapphire',
-            nativeCurrency: {
-              name: 'ROSE',
-              symbol: 'ROSE',
-              decimals: 18,
-            },
-            rpcUrls: ['https://sapphire.oasis.io/', 'wss://sapphire.oasis.io/ws'],
-            blockExplorerUrls: ['https://explorer.oasis.io/mainnet/sapphire'],
-          },
-        ],
-      })
+        break
+      }
+      default: {
+        const provider = getEIP6963CurrentProvider()
+
+        await _init(account, provider)
+        _addEventListenersOnce(provider)
+      }
     }
 
-    throw new Error('Unable to automatically add the network, please do it manually!')
+    if (currentProviderType !== globalProviderType) {
+      setState(prevState => ({
+        ...prevState,
+        providerType: currentProviderType,
+      }))
+    }
   }
 
-  const switchNetwork = async (toNetworkChainId = 0x5afe) => {
-    const ethProvider = new ethers.providers.Web3Provider(window.ethereum!)
-    const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
-      sapphire.SapphireAnnex
+  const switchNetwork = async (chainId = 0x5afe) => {
+    const { providerType } = state
 
-    const network = await sapphireEthProvider.getNetwork()
-
-    if (network.chainId === toNetworkChainId) return
-    try {
-      await window.ethereum!.request?.({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: utils.hexlify(toNetworkChainId) }],
-      })
-    } catch (e) {
-      const metaMaskError = e as MetaMaskError
-      // Metamask desktop - Throws e.code 4902 when chain is not available
-      // Metamask mobile - Throws generic -32603 (https://github.com/MetaMask/metamask-mobile/issues/3312)
-
-      if (metaMaskError?.code !== 4902 && metaMaskError?.code !== -32603) {
-        throw metaMaskError
-      } else {
-        _addNetwork(toNetworkChainId)
-      }
+    switch (providerType) {
+      case ProviderType.EIP1193:
+        return switchNetworkEIP1193(chainId)
+      default:
+        return switchNetworkEIP6963(chainId)
     }
   }
 
@@ -280,31 +278,23 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const addTokenToWallet = async () => {
-    const { wRoseContractAddress: address } = state
-    const symbol = 'WROSE'
+    const { wRoseContractAddress, providerType } = state
 
-    try {
-      await window.ethereum?.request?.({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options: {
-            address,
-            symbol,
-            decimals: 18,
-          },
-          // Fails if Array
-        } as unknown as never,
-      })
-    } catch (ex) {
-      // Silently fail
-      console.error(ex)
+    if (!wRoseContractAddress) {
+      return
+    }
+
+    switch (providerType) {
+      case ProviderType.EIP1193:
+        return addTokenToWalletEIP1193(wRoseContractAddress)
+      default:
+        return addTokenToWalletEIP6963(wRoseContractAddress)
     }
   }
 
   const providerState: Web3ProviderContext = {
     state,
-    isMetaMaskInstalled,
+    isProviderAvailable,
     connectWallet,
     switchNetwork,
     wrap,
