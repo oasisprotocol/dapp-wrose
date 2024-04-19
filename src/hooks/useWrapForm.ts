@@ -3,7 +3,7 @@ import { WrapFormContext } from '../providers/WrapFormContext'
 
 export const useWrapForm = () => {
   const value = useContext(WrapFormContext)
-  if (value === undefined) {
+  if (Object.keys(value).length === 0) {
     throw new Error('[useWrapForm] Component not wrapped within a Provider')
   }
 
