@@ -1,6 +1,5 @@
 import { FC, PropsWithChildren } from 'react'
 import { ethers, utils } from 'ethers'
-import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { EIP1193Error } from '../utils/errors'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { EIP1193Context, EIP1193ProviderContext } from './EIP1193Context.ts'
@@ -58,11 +57,9 @@ export const EIP1193ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const switchNetwork = async (chainId = 0x5afe, provider = window.ethereum) => {
-    const ethProvider = new ethers.providers.Web3Provider(provider!)
-    const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
-      sapphire.SapphireAnnex
+    const web3Provider = new ethers.providers.Web3Provider(provider!)
 
-    const network = await sapphireEthProvider.getNetwork()
+    const network = await web3Provider.getNetwork()
 
     if (network.chainId === chainId) return
     try {
