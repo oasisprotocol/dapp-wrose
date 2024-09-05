@@ -1,6 +1,5 @@
 import { createContext } from 'react'
 import { BigNumber, ethers } from 'ethers'
-import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 
 export enum ProviderType {
@@ -10,8 +9,7 @@ export enum ProviderType {
 
 export interface Web3ProviderState {
   isConnected: boolean
-  ethProvider: ethers.providers.Web3Provider | null
-  sapphireEthProvider: (ethers.providers.Web3Provider & sapphire.SapphireAnnex) | null
+  web3Provider: ethers.providers.Web3Provider | null
   wRoseContractAddress: string | null
   wRoseContract: ethers.Contract | null
   account: string | null

@@ -1,6 +1,5 @@
 import { FC, PropsWithChildren, useCallback, useState } from 'react'
 import { BigNumber, ethers } from 'ethers'
-import * as sapphire from '@oasisprotocol/sapphire-paratime'
 import { MAX_GAS_LIMIT, NETWORKS } from '../constants/config'
 // https://repo.sourcify.dev/contracts/full_match/23295/0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94/
 // https://repo.sourcify.dev/contracts/full_match/23294/0x8Bc2B030b299964eEfb5e1e0b36991352E56D2D3/
@@ -12,8 +11,7 @@ import { useEIP6963 } from '../hooks/useEIP6963.ts'
 
 const web3ProviderInitialState: Web3ProviderState = {
   isConnected: false,
-  ethProvider: null,
-  sapphireEthProvider: null,
+  web3Provider: null,
   wRoseContractAddress: null,
   wRoseContract: null,
   account: null,
@@ -63,7 +61,7 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const _setNetworkSpecificVars = (
     chainId: number,
-    sapphireEthProvider = state.sapphireEthProvider!,
+    sapphireEthProvider = state.web3Provider!,
   ): void => {
     if (!sapphireEthProvider) {
       throw new Error('[Web3Context] Sapphire provider is required!')
@@ -116,18 +114,15 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const _init = async (account: string, provider: typeof window.ethereum) => {
     try {
-      const ethProvider = new ethers.providers.Web3Provider(provider!)
-      const sapphireEthProvider = sapphire.wrap(ethProvider) as ethers.providers.Web3Provider &
-        sapphire.SapphireAnnex
+      const web3Provider = new ethers.providers.Web3Provider(provider!)
 
-      const network = await sapphireEthProvider.getNetwork()
-      _setNetworkSpecificVars(network.chainId, sapphireEthProvider)
+      const network = await web3Provider.getNetwork()
+      _setNetworkSpecificVars(network.chainId, web3Provider)
 
       setState(prevState => ({
         ...prevState,
         isConnected: true,
-        ethProvider,
-        sapphireEthProvider,
+        web3Provider,
         account,
       }))
     } catch (ex) {
@@ -145,13 +140,13 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const getBalance = async () => {
-    const { account, sapphireEthProvider } = state
+    const { account, web3Provider } = state
 
-    if (!account || !sapphireEthProvider) {
+    if (!account || !web3Provider) {
       throw new Error('[Web3Context] Unable to fetch balance!')
     }
 
-    return await sapphireEthProvider.getBalance(account)
+    return await web3Provider.getBalance(account)
   }
 
   const getBalanceOfWROSE = async () => {
@@ -222,14 +217,14 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const getGasPrice = async () => {
-    const { sapphireEthProvider } = state
+    const { web3Provider } = state
 
-    if (!sapphireEthProvider) {
+    if (!web3Provider) {
       // Silently fail
       return BigNumber.from(0)
     }
 
-    return await sapphireEthProvider.getGasPrice()
+    return await web3Provider.getGasPrice()
   }
 
   const wrap = async (amount: string, gasPrice: BigNumber) => {
@@ -265,16 +260,16 @@ export const Web3ContextProvider: FC<PropsWithChildren> = ({ children }) => {
       throw new Error('[txHash] is required!')
     }
 
-    const { sapphireEthProvider } = state
+    const { web3Provider } = state
 
-    if (!sapphireEthProvider) {
-      throw new Error('[sapphireEthProvider] not initialized!')
+    if (!web3Provider) {
+      throw new Error('[web3Provider] not initialized!')
     }
 
-    const txReceipt = await sapphireEthProvider.waitForTransaction(txHash)
+    const txReceipt = await web3Provider.waitForTransaction(txHash)
     if (txReceipt.status === 0) throw new Error('Transaction failed')
 
-    return await sapphireEthProvider.getTransaction(txHash)
+    return await web3Provider.getTransaction(txHash)
   }
 
   const addTokenToWallet = async () => {
