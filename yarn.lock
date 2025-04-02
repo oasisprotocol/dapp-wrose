@@ -496,15 +496,15 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@fontsource-variable/figtree@^5.0.19":
-  version "5.0.19"
-  resolved "https://registry.yarnpkg.com/@fontsource-variable/figtree/-/figtree-5.0.19.tgz#143201f4566c4a30dd0262a0901850a72395d992"
-  integrity sha512-4R7dcsjNJxAhamtOXDlsZgXIPYShzP2sloFFaQXOO9bUHk1thkQWElXzvlinzzI17H59iexUf987m7XTOv/zyQ==
+"@fontsource-variable/figtree@^5.2.6":
+  version "5.2.6"
+  resolved "https://registry.yarnpkg.com/@fontsource-variable/figtree/-/figtree-5.2.6.tgz#4df66a3641c84d8c86fea07159d99cf5ddaf9008"
+  integrity sha512-3uPFk3gDc9ps5YR6D+mE+o0TAV8PguSyJsqaP+i6AXxjL9GD2FNPWNO6YPVCARQhW2LwH6Ck9YzpwhBln+mDpg==
 
-"@fontsource-variable/roboto-mono@^5.0.17":
-  version "5.0.17"
-  resolved "https://registry.yarnpkg.com/@fontsource-variable/roboto-mono/-/roboto-mono-5.0.17.tgz#293d600624b1fc1ca2d811c8bbf78b63b04883fe"
-  integrity sha512-+FyoiEmO2r/kiwPnsPtATK2ROMgNwCnVSvvs+K38GMLIgLSSk4cNqU3GCqJDMSvAPHMYd0gFPGKStFh+yLqd9Q==
+"@fontsource-variable/roboto-mono@^5.2.5":
+  version "5.2.5"
+  resolved "https://registry.yarnpkg.com/@fontsource-variable/roboto-mono/-/roboto-mono-5.2.5.tgz#1c4746399f9b1f3980033aad20c35290c4911ebe"
+  integrity sha512-JsvF7AvjgqGBKCtVuBE5rdYrTdx8yY61Ralo0n6wnlWLCtYAHnj7NjHmpWWvSq9ROKByRfropM7VyeO0a66M3Q==
 
 "@humanwhocodes/config-array@^0.11.13":
   version "0.11.13"
