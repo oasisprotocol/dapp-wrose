@@ -1,4 +1,11 @@
-# ROSE (un)wrapper
+# 🚨 Retired Project 🚨
+
+This project is no longer maintained or actively developed.
+
+It is now part of [ROSE app - Wrap](https://rose.oasis.io/wrap)
+([GitHub repo](https://github.com/oasisprotocol/rose-app)).
+
+## Historical README
 
 [![CI build status][github-ci-build-badge]][github-ci-build-link]
 [![CI lint status][github-ci-lint-badge]][github-ci-lint-link]
