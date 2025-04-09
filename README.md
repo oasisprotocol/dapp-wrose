@@ -2,7 +2,7 @@
 
 This project is no longer maintained or actively developed.
 
-It is now part of [ROSE app - Wrap](https://rose.oasis.io/wrap)
+It is now part of [ROSE App - Wrap](https://rose.oasis.io/wrap)
 ([GitHub repo](https://github.com/oasisprotocol/rose-app)).
 
 ## Historical README
