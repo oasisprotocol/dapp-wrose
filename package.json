@@ -18,8 +18,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@fontsource-variable/figtree": "^5.0.19",
-    "@fontsource-variable/roboto-mono": "^5.0.17",
+    "@fontsource-variable/figtree": "^5.2.6",
+    "@fontsource-variable/roboto-mono": "^5.2.5",
     "@metamask/detect-provider": "^2.0.0",
     "@metamask/jazzicon": "^2.0.0",
     "buffer": "^6.0.3",
